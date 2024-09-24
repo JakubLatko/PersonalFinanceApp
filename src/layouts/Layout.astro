@@ -4,11 +4,13 @@ interface Props {
 }
 
 const { title } = Astro.props;
+import { ViewTransitions } from "astro:transitions";
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
+		<ViewTransitions />
 		<meta charset="UTF-8" />
 		<meta name="description" content="Astro description" />
 		<meta name="viewport" content="width=device-width" />
@@ -17,34 +19,54 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<a href="/pots">pots</a>
+		<a href="/transactions">transactions</a>
+		<a href="/recurring">recurring</a>
+		<a href="/budgets">budgets</a>
+		<a href="/">/</a>
 		<slot />
 	</body>
 </html>
-<style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			white 60%
-		);
-	}
+<style is:global lang="scss">
+	@import "../scss/index.scss";
 	html {
-		font-family: system-ui, sans-serif;
-		background: #13151a;
+		font-family: "Public Sans", sans-serif;
 	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
+	:root {
+		--primary-900: #ffffff;
+		--primary-100: #201f24;
+
+		--neutral-dark-beige: #98908b;
+		--neutral-light-beige: #f8f4f0;
+		--neutral-dark-grey: #696868;
+		--neutral-grey: #b3b3b3;
+		--neutral-light-grey: #f2f2f2;
+
+		--secondary-green: #277c78;
+		--secondary-yellow: #f2cdac;
+		--secondary-cyan: #82c9d7;
+		--secondary-navy: #626070;
+		--secondary-red: #c94736;
+		--secondary-purple: #826cb0;
+
+		--accent-purple: #af81ba;
+		--accent-turq: #597c7c;
+		--accent-brown: #93674f;
+		--accent-magenta: #934f6f;
+		--accent-blue: #3f82b2;
+		--accent-navy-grey: #97a0ac;
+		--accent-army-green: #7f9161;
+		--accent-gold: #cab361;
+		--accent-orange: #be6c49;
+
+		--fw-bold: bold;
+		--fw-regular: regular;
+
+		--fs-heading-1: 2rem;
+		--fs-heading-2: 1.25rem;
+		--fs-body:1rem;
+		--fs-body-sm:0.875rem;
+		--fs-smallest:.75rem;
+
 	}
 </style>
