@@ -4,6 +4,7 @@ interface Props {
 }
 
 const { title } = Astro.props;
+import Sidebar from "@components/Sidebar.astro";
 import { ViewTransitions } from "astro:transitions";
 ---
 
@@ -19,11 +20,7 @@ import { ViewTransitions } from "astro:transitions";
 		<title>{title}</title>
 	</head>
 	<body>
-		<a href="/pots">pots</a>
-		<a href="/transactions">transactions</a>
-		<a href="/recurring">recurring</a>
-		<a href="/budgets">budgets</a>
-		<a href="/">/</a>
+		<Sidebar />
 		<slot />
 	</body>
 </html>
@@ -64,9 +61,21 @@ import { ViewTransitions } from "astro:transitions";
 
 		--fs-heading-1: 2rem;
 		--fs-heading-2: 1.25rem;
-		--fs-body:1rem;
-		--fs-body-sm:0.875rem;
-		--fs-smallest:.75rem;
+		--fs-body: 1rem;
+		--fs-body-sm: 0.875rem;
+		--fs-smallest: 0.75rem;
 
+		--space-500: 2.5rem;
+		--space-400: 2rem;
+		--space-300: 1.5rem;
+		--space-250: 1.25rem;
+		--space-200: 1rem;
+		--space-150: 0.75rem;
+		--space-100: 0.5rem;
+		--space-50: 0.25rem;
+	}
+	body {
+		display: flex;
+		background-color: var(--neutral-light-beige);
 	}
 </style>

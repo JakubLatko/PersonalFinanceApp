@@ -1,48 +1,60 @@
 ---
-import Layout from "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
+import Transaction from "@components/Transaction.astro";
+import data from "src/data.json";
 ---
 
 <Layout title="Welcome to Astro.">
-  Overview
-  Transactions
-  Budgets
-  Pots
-  Recurring Bills
+	<main>
+		<section>
+			<h1>Transactions</h1>
+			<input type="text" placeholder="Search transactions" />
+			<label for="">Sort by</label>
 
-  Minimize Menu
+			<select name="" id="">
+				<option value="">Latest</option>
+				<option value="">Oldest</option>
+				<option value="">A to Z</option>
+				<option value="">Z to A</option>
+				<option value="">Highest</option>
+				<option value="">Lowest</option>
+			</select>
 
-  Search transactions
+			<label for="">Category</label>
+			<select name="" id="">
+				<option value="">All</option>
+				<option value="">Transactions</option>
+				<option value="">Entertainment</option>
+				<option value="">Bills</option>
+				<option value="">Groceries</option>
+				<option value="">Dining Out</option>
+				<option value="">Transportation</option>
+				<option value="">Personal</option>
+				<option value="">Care</option>
+				<option value="">Education</option>
+				<option value="">Lifestyle</option>
+				<option value="">Shopping</option>
+				<option value="">General</option>
+			</select>
+		</section>
 
-  Sort by
-  Latest
-  Oldest
-  A to Z
-  Z to A
-  Highest
-  Lowest
+		<section>
+			<div>
+				<h2>Recipient / Sender</h2>
+				<h2>Category</h2>
+				<h2>Transaction Date</h2>
+				<h2>Amount</h2>
+			</div>
+			<div>
+				{
+					data.transactions.slice(0, 10).map((element) => (
+						<Transaction transaction={element} />
+						// <h2>{element.name}</h2>
+					))
+				}
+			</div>
+		</section>
+	</main>
 
-  Category
-  All Transactions
-  Entertainment
-  Bills
-  Groceries
-  Dining Out
-  Transportation
-  Personal Care
-  Education
-  Lifestyle
-  Shopping
-  General
-
-  Recipient/Sender
-  Category
-  Transaction Date
-  Amount
-
-  <!-- Add transaction data -->
-
-  Prev
-  Next
-
+	Prev Next
 </Layout>
-

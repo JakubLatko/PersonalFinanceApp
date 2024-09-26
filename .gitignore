@@ -21,7 +21,9 @@ public/
 README.md
 README-template.md
 .gitignore
-
+.netlify/
+.vscode/
+.prettierrc
 # macOS-specific files
 .DS_Store
 
