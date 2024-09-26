@@ -59,11 +59,11 @@ import { ViewTransitions } from "astro:transitions";
 		--fw-bold: bold;
 		--fw-regular: regular;
 
-		--fs-heading-1: 2rem;
-		--fs-heading-2: 1.25rem;
-		--fs-body: 1rem;
-		--fs-body-sm: 0.875rem;
-		--fs-smallest: 0.75rem;
+		--fs-heading-1: 2rem; //preset-1
+		--fs-heading-2: 1.25rem; //preset-2
+		--fs-body: 1rem; //preset-3
+		--fs-body-sm: 0.875rem; //preset-4
+		--fs-smallest: 0.75rem; //preset-5
 
 		--space-500: 2.5rem;
 		--space-400: 2rem;
@@ -77,5 +77,25 @@ import { ViewTransitions } from "astro:transitions";
 	body {
 		display: flex;
 		background-color: var(--neutral-light-beige);
+	}
+	@keyframes appear {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes vanish {
+		from {
+			display: flex;
+			opacity: 1;
+			max-height: initial;
+		}
+		to {
+			display: none;
+			opacity: 0;
+			max-height: 0;
+		}
 	}
 </style>

@@ -2,9 +2,14 @@
 const currentPath = Astro.url.pathname;
 ---
 
-<aside>
+<div class="filler"></div>
+<aside class="minimized">
 	<a class="logo" href="/"
-		><img src="/images/logo-large.svg" alt="finance logo" /></a
+		><img
+			class="logoImage"
+			src="/images/logo-small.svg"
+			alt="finance logo"
+		/></a
 	>
 	<a class:list={["navLink", currentPath === "/" ? "active" : null]} href="/">
 		<svg
@@ -82,6 +87,7 @@ const currentPath = Astro.url.pathname;
 	</a>
 	<button class="minimizeBtn">
 		<img
+			class="minimizeArrow arrowRotated"
 			src="/images/icon-minimize-menu.svg"
 			alt="Minimize and maximize menu"
 		/>
@@ -112,14 +118,17 @@ const currentPath = Astro.url.pathname;
 		align-items: center;
 		justify-content: center;
 
-		padding: 0.5rem 1.25rem 0rem 1.25rem;
+		// padding: 0.5rem 1.25rem 0rem 1.25rem;
+		width: calc(20% - 1rem);
+		padding-block: 1rem;
 		position: relative;
 		h2 {
 			display: none;
 		}
-		img {
+		svg {
 			object-fit: contain;
 			width: 1.25rem;
+			height: 1.25rem;
 		}
 	}
 
@@ -127,9 +136,7 @@ const currentPath = Astro.url.pathname;
 		background-color: var(--primary-900);
 		border-top-left-radius: 0.5rem;
 		border-top-right-radius: 0.5rem;
-		h2 {
-			color: var(--primary-900);
-		}
+
 		&::after {
 			content: "";
 			position: absolute;
@@ -147,6 +154,9 @@ const currentPath = Astro.url.pathname;
 	}
 
 	@media only screen and (min-width: 768px) {
+		aside {
+			padding-inline: 2.5rem;
+		}
 		.navLink {
 			width: calc(20% - 2rem);
 			gap: 0.5rem;
@@ -154,10 +164,143 @@ const currentPath = Astro.url.pathname;
 				display: block;
 				text-decoration: none;
 				text-align: center;
-				color: var(--primary-100);
+				color: var(--neutral-grey);
 				font-weight: var(--fw-bold);
 				font-size: var(--fs-smallest);
 			}
+			svg {
+				width: 1.5rem;
+				height: 1.5rem;
+			}
+		}
+		.active {
+			h2 {
+				color: var(--primary-100);
+				font-weight: var(--fw-bold);
+			}
+		}
+	}
+	@media only screen and (min-width: 1366px) {
+		aside {
+			position: fixed;
+			flex-direction: column;
+			// justify-content: center;
+			align-items: center;
+			left: 0;
+			width: fit-content;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			border-top-right-radius: 1rem;
+			border-bottom-right-radius: 1rem;
+			padding-block: 2rem;
+			padding-inline: 0;
+			transition: 300ms ease-in-out;
+			padding-right: 1rem;
+		}
+		.logo,
+		.minimizeBtn {
+			display: flex;
+			animation: appear 1s;
+		}
+		.logo {
+			margin-bottom: auto;
+		}
+		.arrowRotated {
+			rotate: 180deg;
+			// transition: 300ms linear;
+			// animation: appear 1s;
+		}
+		.minimizeBtn {
+			background-color: transparent;
+			border: 0;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			gap: 1rem;
+			margin-top: auto;
+			color: var(--neutral-grey);
+			transition: 300ms linear;
+			min-height: 2rem;
+			// animation: appear 1s;
+		}
+		.minimized {
+			.navLink {
+				h2 {
+					display: none;
+				}
+			}
+			.minimizeBtn {
+				p {
+					display: none;
+				}
+			}
+		}
+		.active {
+			border-bottom-right-radius: 0.5rem;
+			border-top-left-radius: 0;
+			transition: 300ms ease-in-out;
+			&::after {
+				top: 0;
+				bottom: 0;
+				width: 0.25rem;
+				height: auto;
+				right: initial;
+				left: 0rem;
+			}
+		}
+		.navLink {
+			width: 100%;
+			padding-inline: 2rem;
+			margin-block: 1rem;
+			// margin-right: 1rem;
+			display: flex;
+			flex-direction: row;
+			justify-content: left;
+			gap: 1rem;
+			transition: 300ms ease-in-out;
+			h2 {
+				font-size: var(--fs-body);
+				font-weight: var(--fw-bold);
+			}
+		}
+		.navLink,
+		.logo {
+			svg {
+				width: 1.5rem;
+				height: 1.5rem;
+			}
+		}
+		.filler {
+			width: 120px;
+			height: 100vh;
 		}
 	}
 </style>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const minimizeBtn =
+			document.querySelector<HTMLButtonElement>(".minimizeBtn");
+		const aside = document.querySelector("aside");
+		const logo = document.querySelector<HTMLImageElement>(".logoImage");
+		const filler = document.querySelector<HTMLDivElement>(".filler");
+		const minimizeArrow =
+			document.querySelector<HTMLImageElement>(".minimizeArrow");
+		let isMenuOpen: boolean = false;
+
+		minimizeBtn?.addEventListener("click", () => {
+			if (!logo || !minimizeArrow || !filler) return;
+			aside?.classList.toggle("minimized");
+			isMenuOpen = !isMenuOpen;
+			minimizeArrow.classList.toggle("arrowRotated");
+			if (isMenuOpen) {
+				logo.src = "/images/logo-large.svg";
+				filler.style.width = "250px";
+			} else {
+				logo.src = "/images/logo-small.svg";
+				filler.style.width = "120px";
+			}
+		});
+	});
+</script>
