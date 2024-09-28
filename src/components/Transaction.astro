@@ -75,4 +75,46 @@ interface Transaction {
 	h3 {
 		font-size: var(--fs-smallest);
 	}
+	@media only screen and (min-width: 768px) {
+		.container {
+			display: grid;
+			grid-template-columns: auto repeat(6, 1fr);
+			gap: 0.5rem;
+		}
+		img {
+			grid-column: 1;
+		}
+
+		.nameAndCat {
+			grid-column: 2 / span 3;
+		}
+
+		.dateAndAmount {
+			grid-column: 5 / span 3;
+		}
+
+		.nameAndCat,
+		.dateAndAmount {
+			display: flex;
+			flex-direction: row;
+			// width: 40%;
+			width: 100%;
+			align-items: center;
+			justify-content: space-between;
+			text-align: initial;
+			h3 {
+				margin-inline: 2rem;
+			}
+		}
+
+		// .nameAndCat {
+		// 	justify-content: center;
+		// 	h2 {
+		// 		width: 80%;
+		// 	}
+		// 	h3 {
+		// 		width: 20%;
+		// 	}
+		// }
+	}
 </style>

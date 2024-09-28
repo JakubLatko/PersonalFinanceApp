@@ -2,6 +2,55 @@
 import Layout from "../layouts/Layout.astro";
 import Transaction from "@components/Transaction.astro";
 import data from "src/data.json";
+import type TransactionType from "@lib/transaction.ts";
+const url = Astro.url;
+const params = url.searchParams;
+const dataToShow: any = [];
+data.transactions.forEach((element) => {
+	if (params.get("category") == "All") {
+		dataToShow.push(element);
+		return;
+	}
+	if (element.category === params.get("category")) {
+		dataToShow.push(element);
+	}
+});
+switch (params.get("sorting")) {
+	case "Latest":
+		dataToShow.sort((a: TransactionType, b: TransactionType) => {
+			//@ts-ignore
+			return new Date(b.date) - new Date(a.date);
+		});
+		break;
+	case "Oldest":
+		dataToShow.sort((a: TransactionType, b: TransactionType) => {
+			//@ts-ignore
+			return new Date(a.date) - new Date(b.date);
+		});
+		break;
+	case "A_to_Z":
+		dataToShow.sort((a: TransactionType, b: TransactionType) => {
+			return a.name.localeCompare(b.name);
+		});
+		break;
+	case "Z_to_A":
+		dataToShow.sort((a: TransactionType, b: TransactionType) => {
+			return b.name.localeCompare(a.name);
+		});
+		break;
+	case "Highest":
+		dataToShow.sort((a: TransactionType, b: TransactionType) => {
+			return b.amount - a.amount;
+		});
+		break;
+	case "Lowest":
+		dataToShow.sort((a: TransactionType, b: TransactionType) => {
+			return a.amount - b.amount;
+		});
+		break;
+	default:
+		break;
+}
 ---
 
 <Layout title="Welcome to Astro.">
@@ -13,37 +62,98 @@ import data from "src/data.json";
 					<input type="text" placeholder="Search transactions" />
 					<button><img src="/images/icon-search.svg" alt="" /></button>
 				</div>
-				<label class="desktopOnly" for="sortingSelect">Sort by</label>
-				<button class="mobileOnly filteringBtn"
-					><img src="/images/icon-filter-mobile.svg" alt="" /></button
-				>
-				<select class="desktopOnly" name="sortingSelect" id="sortingSelect">
-					<option value="Latest">Latest</option>
-					<option value="Oldest">Oldest</option>
-					<option value="A_to_Z">A to Z</option>
-					<option value="Z_to_A">Z to A</option>
-					<option value="Highest">Highest</option>
-					<option value="Lowest">Lowest</option>
-				</select>
-				<label class="desktopOnly" for="categorySelect">Category</label>
-				<button class="mobileOnl sortingBtn"
-					><img src="/images/icon-sort-mobile.svg" alt="" /></button
-				>
-				<select class="desktopOnly" name="categorySelect" id="categorySelect">
-					<option value="All">All</option>
-					<option value="Transactions">Transactions</option>
-					<option value="Entertainment">Entertainment</option>
-					<option value="Bills">Bills</option>
-					<option value="Groceries">Groceries</option>
-					<option value="DiningOut">Dining Out</option>
-					<option value="Transportation">Transportation</option>
-					<option value="Personal">Personal</option>
-					<option value="Care">Care</option>
-					<option value="Education">Education</option>
-					<option value="Lifestyle">Lifestyle</option>
-					<option value="Shopping">Shopping</option>
-					<option value="General">General</option>
-				</select>
+				<div class="sortingWrapper">
+					<label class="desktopOnly" for="sortingSelect">Sort by</label>
+					<button class="mobileOnly sortingBtn"
+						><img src="/images/icon-sort-mobile.svg" alt="" /></button
+					>
+					<select
+						onchange="this.form.submit()"
+						class="desktopOnly"
+						name="sorting"
+						id="sortingSelect">
+						<option selected={params.get("sorting") === "Latest"} value="Latest"
+							>Latest</option
+						>
+						<option selected={params.get("sorting") === "Oldest"} value="Oldest"
+							>Oldest</option
+						>
+						<option selected={params.get("sorting") === "A_to_Z"} value="A_to_Z"
+							>A to Z</option
+						>
+						<option selected={params.get("sorting") === "Z_to_A"} value="Z_to_A"
+							>Z to A</option
+						>
+						<option
+							selected={params.get("sorting") === "Highest"}
+							value="Highest">Highest</option
+						>
+						<option selected={params.get("sorting") === "Lowest"} value="Lowest"
+							>Lowest</option
+						>
+					</select>
+				</div>
+				<div class="filteringWrapper">
+					<label class="desktopOnly" for="categorySelect">Category</label>
+					<button class="mobileOnly filteringBtn"
+						><img src="/images/icon-filter-mobile.svg" alt="" /></button
+					>
+					<select
+						onchange="this.form.submit()"
+						class="desktopOnly"
+						name="category"
+						id="categorySelect">
+						<option selected={params.get("category") === "All"} value="All"
+							>All</option
+						>
+						<option
+							selected={params.get("category") === "Transactions"}
+							value="Transactions">Transactions</option
+						>
+						<option
+							selected={params.get("category") === "Entertainment"}
+							value="Entertainment">Entertainment</option
+						>
+						<option selected={params.get("category") === "Bills"} value="Bills"
+							>Bills</option
+						>
+						<option
+							selected={params.get("category") === "Groceries"}
+							value="Groceries">Groceries</option
+						>
+						<option
+							selected={params.get("category") === "DiningOut"}
+							value="DiningOut">Dining Out</option
+						>
+						<option
+							selected={params.get("category") === "Transportation"}
+							value="Transportation">Transportation</option
+						>
+						<option
+							selected={params.get("category") === "Personal"}
+							value="Personal">Personal</option
+						>
+						<option selected={params.get("category") === "Care"} value="Care"
+							>Care</option
+						>
+						<option
+							selected={params.get("category") === "Education"}
+							value="Education">Education</option
+						>
+						<option
+							selected={params.get("category") === "Lifestyle"}
+							value="Lifestyle">Lifestyle</option
+						>
+						<option
+							selected={params.get("category") === "Shopping"}
+							value="Shopping">Shopping</option
+						>
+						<option
+							selected={params.get("category") === "General"}
+							value="General">General</option
+						>
+					</select>
+				</div>
 			</form>
 		</section>
 		<section class="contentTable">
@@ -55,7 +165,7 @@ import data from "src/data.json";
 			</div>
 			<div class="transactionsWrapper">
 				{
-					data.transactions.slice(0, 10).map((element) => (
+					dataToShow.slice(0, 10).map((element: any) => (
 						<Transaction transaction={element} />
 						// <h2>{element.name}</h2>
 					))
@@ -126,6 +236,7 @@ import data from "src/data.json";
 	}
 	form {
 		display: flex;
+		align-items: center;
 		// margin-bottom: 1rem;
 	}
 	.inputWrapper {
@@ -156,6 +267,13 @@ import data from "src/data.json";
 		background-color: transparent;
 		min-width: 10vw;
 	}
+	.filteringWrapper,
+	.sortingWrapper {
+		display: grid;
+		place-items: center;
+		width: fit-content;
+		height: fit-content;
+	}
 	.contentTable {
 	}
 	.tableHeaders {
@@ -165,5 +283,84 @@ import data from "src/data.json";
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+	}
+	@media only screen and (min-width: 768px) {
+		.desktopOnly {
+			display: block;
+		}
+		.mobileOnly {
+			display: none;
+		}
+		main {
+			padding-inline: 2.5rem;
+		}
+		section {
+			padding-inline: 2rem;
+		}
+		section:first-of-type {
+			padding-block-start: 2rem;
+		}
+		section:last-of-type {
+			padding-block-end: 2rem;
+		}
+		form {
+			justify-content: space-between;
+		}
+		.tableHeaders {
+			display: grid;
+			grid-template-columns: repeat(7, 1fr);
+			gap: 0.5rem;
+			align-items: center;
+			padding-block: 1rem;
+			margin-bottom: 1rem;
+			border-bottom: 1px solid var(--neutral-light-grey);
+			h2,
+			h3 {
+				font-size: var(--fs-smallest);
+				color: var(--neutral-dark-grey);
+				font-weight: var(--fw-regular);
+			}
+			h2:first-of-type {
+				grid-column: 1 / span 3;
+			}
+			h2:nth-of-type(2) {
+				grid-column: 4;
+				text-align: right;
+				margin-right: 4rem;
+			}
+			h2:nth-of-type(3) {
+				grid-column: 5;
+			}
+			h2:nth-of-type(4) {
+				grid-column: 6 / span 2;
+				text-align: right;
+			}
+		}
+
+		select {
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			border: 1px solid var(--neutral-grey);
+			font-size: var(--fs-body-sm);
+			color: var(--primary-100);
+		}
+		label {
+			color: var(--primary-100);
+			font-size: var(--fs-body-sm);
+		}
+		option {
+			font-size: var(--fs-smallest);
+			padding: 1rem 0.5rem;
+			margin-block: 1rem;
+			border: 0;
+			width: fit-content;
+		}
+
+		.filteringWrapper,
+		.sortingWrapper {
+			display: flex;
+			gap: 1rem;
+			padding-inline: 0.5rem;
+		}
 	}
 </style>
