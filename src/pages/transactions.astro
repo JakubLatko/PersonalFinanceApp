@@ -5,7 +5,19 @@ import data from "src/data.json";
 import type TransactionType from "@lib/transaction.ts";
 const url = Astro.url;
 const params = url.searchParams;
-const dataToShow: any = [];
+
+if (!params.get("category") || !params.get("sorting")) {
+	params.set("category", "All");
+	params.set("sorting", "Latest");
+	Astro.url.search = params.toString();
+}
+if (!params.get("page")) {
+	params.set("page", "1");
+}
+
+let currentPage = Number(params.get("page"));
+
+const dataToShow: TransactionType[] = [];
 data.transactions.forEach((element) => {
 	if (params.get("category") == "All") {
 		dataToShow.push(element);
@@ -51,9 +63,25 @@ switch (params.get("sorting")) {
 	default:
 		break;
 }
+
+let paginationButtons: number[] = [];
+for (let i = 0; i < dataToShow.length / 10; i++) {
+	paginationButtons.push(i + 1);
+}
+
+const prevPage = currentPage > 1 ? currentPage - 1 : null;
+const nextPage = currentPage < dataToShow.length / 10 ? currentPage + 1 : null;
+function getPageUrl(currentPage: number) {
+	const updatedParams = new URLSearchParams(params);
+	updatedParams.set("page", String(currentPage));
+	return `?${updatedParams.toString()}`;
+}
+
+const prevPageUrl = prevPage ? getPageUrl(prevPage) : null;
+const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="finance | Transactions">
 	<main>
 		<h1>Transactions</h1>
 		<section>
@@ -105,10 +133,6 @@ switch (params.get("sorting")) {
 						id="categorySelect">
 						<option selected={params.get("category") === "All"} value="All"
 							>All</option
-						>
-						<option
-							selected={params.get("category") === "Transactions"}
-							value="Transactions">Transactions</option
 						>
 						<option
 							selected={params.get("category") === "Entertainment"}
@@ -165,16 +189,49 @@ switch (params.get("sorting")) {
 			</div>
 			<div class="transactionsWrapper">
 				{
-					dataToShow.slice(0, 10).map((element: any) => (
-						<Transaction transaction={element} />
-						// <h2>{element.name}</h2>
-					))
+					dataToShow
+						.slice(currentPage * 10 - 10, currentPage * 10)
+						.map((element: TransactionType) => (
+							<Transaction transaction={element} />
+						))
 				}
 			</div>
 		</section>
-		<section>
-			<button><img src="/images/icon-caret-left.svg" alt="" />Prev</button>
-			<button><img src="/images/icon-caret-right.svg" alt="" />Next</button>
+		<section class="navBtns">
+			<a href={prevPageUrl} class="prevBtn navBtn"
+				><img src="/images/icon-caret-left.svg" alt="" /><p>Prev</p></a
+			>
+			<div class="pageBtns">
+				{
+					paginationButtons.length < 6 && currentPage < 6
+						? paginationButtons.map((button) => (
+								<a
+									class:list={[
+										"navBtn pageBtn",
+										button === currentPage ? "active" : null,
+									]}
+									href={getPageUrl(button)}>
+									{button}
+								</a>
+							))
+						: paginationButtons
+								.slice(currentPage - 2, currentPage + 3)
+								.map((button) => (
+									<a
+										class:list={[
+											"navBtn pageBtn",
+											button === currentPage ? "active" : null,
+										]}
+										href={getPageUrl(button)}>
+										{button}
+									</a>
+								))
+				}
+			</div>
+
+			<a href={nextPageUrl} class="nextBtn navBtn"
+				><p>Next</p> <img src="/images/icon-caret-right.svg" alt="" /></a
+			>
 		</section>
 	</main>
 	<dialog>
@@ -274,7 +331,35 @@ switch (params.get("sorting")) {
 		width: fit-content;
 		height: fit-content;
 	}
-	.contentTable {
+	.navBtns {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	.pageBtns {
+		display: flex;
+		gap: 0.5rem;
+	}
+	.navBtn {
+		aspect-ratio: 1;
+		// padding: 1rem;
+		border: 1px solid var(--neutral-dark-grey);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		border-radius: 0.25rem;
+		text-decoration: none;
+		p {
+			display: none;
+		}
+		img {
+			display: block;
+		}
+	}
+	.active {
+		background-color: var(--primary-100);
+		color: var(--primary-900);
 	}
 	.tableHeaders {
 		display: none;
@@ -307,33 +392,46 @@ switch (params.get("sorting")) {
 			justify-content: space-between;
 		}
 		.tableHeaders {
-			display: grid;
-			grid-template-columns: repeat(7, 1fr);
-			gap: 0.5rem;
+			display: flex;
+			flex-direction: row;
 			align-items: center;
 			padding-block: 1rem;
 			margin-bottom: 1rem;
-			border-bottom: 1px solid var(--neutral-light-grey);
-			h2,
-			h3 {
+			h2 {
 				font-size: var(--fs-smallest);
 				color: var(--neutral-dark-grey);
 				font-weight: var(--fw-regular);
 			}
-			h2:first-of-type {
-				grid-column: 1 / span 3;
+			h2:nth-of-type(1) {
+				flex-grow: 1;
 			}
 			h2:nth-of-type(2) {
-				grid-column: 4;
-				text-align: right;
-				margin-right: 4rem;
+				width: fit-content;
+				// padding-inline: 1.5rem;
+				margin-left: 2rem;
 			}
 			h2:nth-of-type(3) {
-				grid-column: 5;
+				width: fit-content;
+				// padding-inline: 1.5rem;
+				margin-left: 4rem;
 			}
 			h2:nth-of-type(4) {
-				grid-column: 6 / span 2;
 				text-align: right;
+
+				flex-grow: 1;
+			}
+		}
+		.prevBtn,
+		.nextBtn {
+			width: fit-content;
+			display: flex;
+			gap: 0.5rem;
+			padding-inline: 0.75rem;
+			min-height: 2rem;
+			aspect-ratio: initial;
+			p,
+			img {
+				display: block;
 			}
 		}
 
@@ -361,6 +459,35 @@ switch (params.get("sorting")) {
 			display: flex;
 			gap: 1rem;
 			padding-inline: 0.5rem;
+		}
+	}
+	@media screen and (min-width: 1366px) {
+		section {
+			padding-inline: 3rem;
+		}
+		section:first-of-type {
+			padding-block-start: 3rem;
+		}
+		section:last-of-type {
+			padding-block-end: 3rem;
+		}
+
+		.tableHeaders {
+			h2:nth-of-type(2) {
+				margin-left: 1rem;
+			}
+			h2:nth-of-type(3) {
+				margin-left: 6.5rem;
+			}
+		}
+		.inputWrapper {
+			input {
+				min-width: 400px;
+			}
+		}
+		.sortingWrapper {
+			margin-left: auto;
+			margin-right: 2rem;
 		}
 	}
 </style>
