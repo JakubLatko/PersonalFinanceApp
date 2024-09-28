@@ -1,0 +1,86 @@
+<canvas id="myChart"></canvas>
+
+<style lang="scss">
+	#myChart {
+		width: 100%;
+		height: 100%;
+		max-width: 100vw;
+		max-height: 50vh;
+	}
+</style>
+
+<script>
+	import {
+		Chart,
+		BarController,
+		BarElement,
+		CategoryScale,
+		LinearScale,
+		Tooltip,
+		Legend,
+		DoughnutController,
+		ArcElement,
+	} from "chart.js";
+	import data from "../data.json";
+	import type BudgetType from "../lib/budget.ts";
+	document.addEventListener("astro:page-load", () => {
+		// Rejestracja wymaganych komponentów wykresu
+		Chart.register(
+			BarController,
+			BarElement,
+			CategoryScale,
+			LinearScale,
+			Tooltip,
+			Legend,
+			DoughnutController,
+			ArcElement
+		);
+
+		(async function () {
+			const refinedData: BudgetType[] = [];
+			data.budgets.forEach((budget) => {
+				let item: BudgetType = {
+					label: budget.category,
+					spent: 0,
+					maximum: budget.maximum,
+					theme: budget.theme,
+				};
+				data.transactions.forEach((transaction) => {
+					if (transaction.category === budget.category) {
+						item.spent += transaction.amount;
+					}
+				});
+				refinedData.push(item);
+			});
+			refinedData.forEach((item) => {
+				item.spent = item.spent * -1;
+			});
+			const chartData = {
+				labels: refinedData.map((row) => row.label),
+				datasets: [
+					{
+						// label: "First dataset",
+						data: refinedData.map((row) => row.spent),
+						backgroundColor: refinedData.map((row) => row.theme),
+						// borderColor: refinedData.map((row) => row.theme),
+					},
+				],
+			};
+
+			console.log(refinedData);
+
+			// @ts-ignore
+			new Chart(document.getElementById<ChartItem>("myChart"), {
+				type: "doughnut",
+				data: chartData,
+				options: {
+					plugins: {
+						legend: {
+							display: false,
+						},
+					},
+				},
+			});
+		})();
+	});
+</script>

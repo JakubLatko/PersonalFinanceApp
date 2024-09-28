@@ -1,0 +1,30 @@
+---
+import transformMoney from "@lib/transformMoney";
+
+interface Props {
+	label: string;
+	spent: number;
+	maximum: number;
+	theme: string;
+}
+
+const { label, spent, maximum, theme } = Astro.props;
+---
+
+<div>
+	<span class="bar" style={`background:${theme}`}></span>
+	<h3>{label}</h3>
+	<h2>${spent.toFixed(2)}</h2>
+	of
+	<h3>${maximum.toFixed(2)}</h3>
+</div>
+
+<style lang="scss">
+	div {
+		display: flex;
+	}
+	.bar {
+		height: 2rem;
+		width: 8px;
+	}
+</style>

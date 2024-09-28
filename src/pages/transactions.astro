@@ -146,19 +146,16 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 							value="Groceries">Groceries</option
 						>
 						<option
-							selected={params.get("category") === "DiningOut"}
-							value="DiningOut">Dining Out</option
+							selected={params.get("category") === "Dining Out"}
+							value="Dining Out">Dining Out</option
 						>
 						<option
 							selected={params.get("category") === "Transportation"}
 							value="Transportation">Transportation</option
 						>
 						<option
-							selected={params.get("category") === "Personal"}
-							value="Personal">Personal</option
-						>
-						<option selected={params.get("category") === "Care"} value="Care"
-							>Care</option
+							selected={params.get("category") === "Personal Care"}
+							value="Personal Care">Personal Care</option
 						>
 						<option
 							selected={params.get("category") === "Education"}
@@ -234,7 +231,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			>
 		</section>
 	</main>
-	<dialog>
+	<!-- <dialog>
 		<select class="desktopOnly" name="sortingSelect" id="sortingSelect">
 			<option value="Latest">Latest</option>
 			<option value="Oldest">Oldest</option>
@@ -260,7 +257,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			<option value="Shopping">Shopping</option>
 			<option value="General">General</option>
 		</select>
-	</dialog>
+	</dialog> -->
 </Layout>
 
 <style lang="scss">

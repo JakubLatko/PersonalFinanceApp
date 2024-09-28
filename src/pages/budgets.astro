@@ -1,75 +1,68 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import DonutChart from "@components/DonutChart.astro";
+import Layout from "../layouts/Layout.astro";
+import type BudgetType from "../lib/budget.ts";
+import data from "../data.json";
+import SpendingSummary from "@components/SpendingSummary.astro";
+const refinedData: BudgetType[] = [];
+data.budgets.forEach((budget) => {
+	let item: BudgetType = {
+		label: budget.category,
+		spent: 0,
+		maximum: budget.maximum,
+		theme: budget.theme,
+	};
+	data.transactions.forEach((transaction) => {
+		if (transaction.category === budget.category) {
+			item.spent += transaction.amount;
+		}
+	});
+	refinedData.push(item);
+});
+refinedData.forEach((item) => {
+	item.spent = item.spent * -1;
+});
 ---
 
 <Layout title="Welcome to Astro.">
-  Overview
-  Transactions
-  Budgets
-  Pots
-  Recurring Bills
+	<main>
+		<section>
+			<h1>Budgets</h1>
+			<button>+ Add New Budget</button>
+		</section>
 
-  Minimize Menu
+		<section>
+			<DonutChart client:load />
+			<h2>Spending summary</h2>
+			{
+				refinedData.map((item) => (
+					<SpendingSummary
+						label={item.label}
+						spent={item.spent}
+						maximum={item.maximum}
+						theme={item.theme}
+					/>
+				))
+			}
+		</section>
 
-  Budgets
+		<!-- Add New Budget Choose a category to set a spending budget. These categories
+		can help you monitor spending. Edit Budget As your budgets change, feel free
+		to update your spending limits. Budget Category Entertainment Bills
+		Groceries Dining Out Transportation Personal Care Education Lifestyle
+		Shopping General Maximum Spend Theme Green Yellow Cyan Navy Red Purple
+		Turquoise Brown Magenta Blue Navy Grey Army Green Pink Gold Orange Add
+		Budget / Save Changes -->
 
-  Add New Budget
-
-  <!-- Add budget data -->
-
-
-  <!-- Add/Edit budget start -->
-
-  Add New Budget
-  Choose a category to set a spending budget. These categories can help you monitor spending.
-
-  Edit Budget
-  As your budgets change, feel free to update your spending limits.
-  
-  Budget Category
-  Entertainment
-  Bills
-  Groceries
-  Dining Out
-  Transportation
-  Personal Care
-  Education
-  Lifestyle
-  Shopping
-  General
-
-  Maximum Spend
-
-  Theme
-  Green
-  Yellow
-  Cyan
-  Navy
-  Red 
-  Purple
-  Turquoise
-  Brown
-  Magenta
-  Blue
-  Navy Grey
-  Army Green
-  Pink
-  Gold
-  Orange
-
-  Add Budget / Save Changes
-  
-  <!-- Add/Edit budget end -->
-
-  <!-- Delete budget start -->
-
-  Delete '<!-- budget name -->'
-
-  Are you sure you want to delete this budget? This action cannot be reversed, and all the data inside it will be removed forever.
-
-  Yes, Confirm Deletion
-  No, Go Back
-
-  <!-- Delete budget end -->
-
+		<!-- Delete ' budget name ' Are you sure you want to delete this budget?
+		This action cannot be reversed, and all the data inside it will be removed
+		forever. Yes, Confirm Deletion No, Go Back -->
+	</main>
 </Layout>
+
+<style>
+	main {
+		display: flex;
+		flex-direction: column;
+	}
+</style>
