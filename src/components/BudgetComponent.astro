@@ -1,0 +1,99 @@
+---
+import Transaction from "./Transaction.astro";
+
+interface Props {
+	label: string;
+	maximum: number;
+	spent: number;
+	transaction: any;
+	theme: string;
+}
+const { label, maximum, spent, transaction, theme } = Astro.props;
+---
+
+<div class="container">
+	<div class="header">
+		<span class="accentDot" style=`background-color: ${theme}`></span>
+		<h2>{label}</h2>
+		<button><img src="/images/icon-ellipsis.svg" alt="" /></button>
+	</div>
+	<h3>Maximum of ${maximum.toFixed(2)}</h3>
+	<span class="bar">
+		<span
+			style=`background-color: ${theme}; width: ${(spent / maximum) * 100}% `
+			class="progress"></span>
+	</span>
+	<div class="amounts">
+		<div>
+			<span></span>
+			<h3>${spent.toFixed(2)}</h3>
+		</div>
+		<div>
+			<span></span>
+			<h3>${(maximum - spent).toFixed(2)}</h3>
+		</div>
+	</div>
+	<div class="latestSpending">
+		<h2>Latest spending</h2>
+		<a href={"/transactions?category=" + label + "&sorting=Latest"}
+			>See all <img src="/images/icon-caret-right.svg" alt="" /></a
+		>
+		<div class="transactions">
+			<Transaction
+				imageHidden={true}
+				categoryHidden={true}
+				transaction={transaction}
+			/>
+		</div>
+	</div>
+</div>
+
+<style lang="scss">
+	.container {
+		display: flex;
+		flex-direction: column;
+		background-color: var(--primary-900);
+		padding: 1.25rem;
+	}
+	.header {
+		display: flex;
+		align-items: center;
+		button {
+			border: 0;
+			background-color: transparent;
+			width: fit-content;
+			padding: 0.5rem;
+			height: auto;
+			margin-left: auto;
+			img {
+				object-fit: contain;
+				width: 1.25rem;
+				height: auto;
+			}
+		}
+	}
+	.bar {
+		width: 100%;
+		height: 2rem;
+		background-color: var(--neutral-light-beige);
+		border-radius: 0.25rem;
+		padding: 0.25rem;
+		.progress {
+			height: 100%;
+			border-radius: 0.25rem;
+			max-width: 100%;
+			display: block;
+		}
+	}
+
+	.accentDot {
+		width: 1rem;
+		height: 1rem;
+		border-radius: 100vw;
+		margin-right: 0.5rem;
+	}
+	.latestSpending {
+		background-color: var(--neutral-light-beige);
+		padding: 1rem;
+	}
+</style>

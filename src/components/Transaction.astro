@@ -2,10 +2,12 @@
 import { Image } from "astro:assets";
 import transformDate from "../lib/transformDate";
 import transformMoney from "../lib/transformMoney";
-const { transaction } = Astro.props;
+const { transaction, categoryHidden, imageHidden } = Astro.props;
 
 interface Props {
 	transaction: Transaction;
+	categoryHidden?: boolean;
+	imageHidden?: boolean;
 }
 
 interface Transaction {
@@ -19,10 +21,18 @@ interface Transaction {
 ---
 
 <div class="container">
-	<Image src={transaction.avatar} alt={""} width={100} height={100} />
+	<Image
+		class:list={[imageHidden ? "hidden" : null]}
+		src={transaction.avatar}
+		alt={""}
+		width={100}
+		height={100}
+	/>
 	<div class="nameAndCat">
 		<h2>{transaction.name}</h2>
-		<h3>{transaction.category}</h3>
+		<h3 class:list={[categoryHidden ? "hidden" : null]}>
+			{transaction.category}
+		</h3>
 	</div>
 	<div class="dateAndAmount">
 		<h3>{transformDate(transaction.date)}</h3>
@@ -48,6 +58,9 @@ interface Transaction {
 		width: 2rem;
 		height: 2rem;
 		margin-right: 0.5rem;
+	}
+	.hidden {
+		display: none;
 	}
 	.nameAndCat,
 	.dateAndAmount {

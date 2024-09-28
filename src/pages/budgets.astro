@@ -4,6 +4,8 @@ import Layout from "../layouts/Layout.astro";
 import type BudgetType from "../lib/budget.ts";
 import data from "../data.json";
 import SpendingSummary from "@components/SpendingSummary.astro";
+import BudgetComponent from "@components/BudgetComponent.astro";
+
 const refinedData: BudgetType[] = [];
 data.budgets.forEach((budget) => {
 	let item: BudgetType = {
@@ -31,22 +33,29 @@ refinedData.forEach((item) => {
 			<button>+ Add New Budget</button>
 		</section>
 
-		<section>
-			<DonutChart client:load />
-			<h2>Spending summary</h2>
-			{
-				refinedData.map((item) => (
-					<SpendingSummary
-						label={item.label}
-						spent={item.spent}
-						maximum={item.maximum}
-						theme={item.theme}
-					/>
-				))
-			}
+		<section class="donutSection">
+			<DonutChart />
+			<h2 class="sectionTitle">Spending summary</h2>
+			<div class="spendingSummaryWrapper">
+				{
+					refinedData.map((item) => (
+						<SpendingSummary
+							label={item.label}
+							spent={item.spent}
+							maximum={item.maximum}
+							theme={item.theme}
+						/>
+					))
+				}
+			</div>
 		</section>
-
-		<!-- Add New Budget Choose a category to set a spending budget. These categories
+		<BudgetComponent
+			label="General"
+			maximum={1000}
+			spent={1200}
+			transaction={data.transactions[0]}
+			theme="#277C78">
+			<!-- Add New Budget Choose a category to set a spending budget. These categories
 		can help you monitor spending. Edit Budget As your budgets change, feel free
 		to update your spending limits. Budget Category Entertainment Bills
 		Groceries Dining Out Transportation Personal Care Education Lifestyle
@@ -54,15 +63,56 @@ refinedData.forEach((item) => {
 		Turquoise Brown Magenta Blue Navy Grey Army Green Pink Gold Orange Add
 		Budget / Save Changes -->
 
-		<!-- Delete ' budget name ' Are you sure you want to delete this budget?
+			<!-- Delete ' budget name ' Are you sure you want to delete this budget?
 		This action cannot be reversed, and all the data inside it will be removed
 		forever. Yes, Confirm Deletion No, Go Back -->
+		</BudgetComponent>
 	</main>
-</Layout>
 
-<style>
-	main {
-		display: flex;
-		flex-direction: column;
-	}
-</style>
+	<style>
+		main {
+			display: flex;
+			flex-direction: column;
+			margin-inline: auto;
+			padding: 1rem;
+			width: 100%;
+			margin-block-end: 5rem;
+		}
+		h1 {
+			font-size: var(--fs-heading-1);
+			color: var(--primary-100);
+			/* margin-block: 5rem 3rem; */
+		}
+
+		.spendingSummaryWrapper {
+		}
+
+		section {
+			background-color: var(--primary-900);
+			/* padding-inline: 1rem; */
+			padding: 1.5rem;
+			border-radius: 0.75rem;
+			&:first-of-type {
+				background-color: var(--neutral-light-beige);
+				display: flex;
+				flex-direction: row;
+				justify-content: space-between;
+				margin-block: 2rem 3rem;
+				padding: 0;
+				button {
+					background-color: var(--primary-100);
+					color: var(--primary-900);
+					border: 0;
+					border-radius: 0.25rem;
+					padding: 1rem 0.5rem;
+					font-size: var(--fs-body-sm);
+				}
+			}
+		}
+		.donutSection {
+			.sectionTitle {
+				margin-block: 5rem 1rem;
+			}
+		}
+	</style>
+</Layout>
