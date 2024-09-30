@@ -44,7 +44,7 @@ data.transactions.forEach((transaction) => {
 		<div>
 			<span></span>
 			<div class="free">
-				<p>Free</p>
+				<p>Remaining</p>
 				<h3>${(maximum - spent).toFixed(2)}</h3>
 			</div>
 		</div>
@@ -190,6 +190,15 @@ data.transactions.forEach((transaction) => {
 			&:first-of-type {
 				display: none;
 			}
+		}
+	}
+	@media screen and (min-width: 768px) {
+		.container {
+			padding: 2rem;
+			gap: 1.25rem;
+		}
+		.latestSpending {
+			padding: 1.5rem;
 		}
 	}
 </style>

@@ -80,47 +80,34 @@ interface Transaction {
 	}
 	@media only screen and (min-width: 768px) {
 		.container {
-			display: grid;
-			grid-template-columns: auto repeat(6, 1fr);
-			gap: 0.5rem;
-		}
-		img {
-			grid-column: 1;
-		}
-
-		.nameAndCat {
-			grid-column: 2 / span 3;
+			// display: grid;
+			// grid-template-columns: auto repeat(6, 1fr);
+			// gap: 0.5rem;
+			display: flex;
+			flex-direction: row;
 		}
 
-		.dateAndAmount {
-			grid-column: 5 / span 3;
-		}
 		.hidden {
 			display: block;
+		}
+		.nameAndCat {
+			margin-left: 1rem;
 		}
 		.nameAndCat,
 		.dateAndAmount {
 			display: flex;
-			flex-direction: row;
-			// width: 40%;
-			width: 100%;
-			align-items: center;
-			justify-content: space-between;
+			flex-direction: column-reverse;
 			text-align: initial;
 			h3 {
 				margin-inline: 2rem;
 			}
 		}
-
-		// .nameAndCat {
-		// 	justify-content: center;
-		// 	h2 {
-		// 		width: 80%;
-		// 	}
-		// 	h3 {
-		// 		width: 20%;
-		// 	}
-		// }
+		.dateAndAmount {
+			text-align: right;
+			h3 {
+				margin-inline: 0;
+			}
+		}
 	}
 	@media only screen and (min-width: 1366px) {
 		.nameAndCat {

@@ -50,23 +50,27 @@ data.transactions.forEach((transaction) => {
 		</section>
 
 		<section class="donutSection">
-			<DonutChart />
-			<div class="budgetSummary">
-				<h2>${(spent * -1).toFixed(2)}</h2>
-				<p>of ${maximum.toFixed(2)} limit</p>
+			<div class="donutWrapper">
+				<DonutChart />
+				<div class="budgetSummary">
+					<h2>${(spent * -1).toFixed(2)}</h2>
+					<p>of ${maximum.toFixed(2)} limit</p>
+				</div>
 			</div>
-			<h2 class="sectionTitle">Spending summary</h2>
-			<div class="spendingSummaryWrapper">
-				{
-					refinedData.map((item) => (
-						<SpendingSummary
-							label={item.label}
-							spent={item.spent}
-							maximum={item.maximum}
-							theme={item.theme}
-						/>
-					))
-				}
+			<div class="spendingSummary">
+				<h2 class="sectionTitle">Spending summary</h2>
+				<div class="spendingSummaryWrapper">
+					{
+						refinedData.map((item) => (
+							<SpendingSummary
+								label={item.label}
+								spent={item.spent}
+								maximum={item.maximum}
+								theme={item.theme}
+							/>
+						))
+					}
+				</div>
 			</div>
 		</section>
 		<section class="budgetSection">
@@ -152,6 +156,7 @@ data.transactions.forEach((transaction) => {
 			}
 		}
 		.donutSection {
+			margin-bottom: 1rem;
 			.sectionTitle {
 				margin-block: 2rem 1rem;
 			}
@@ -162,6 +167,25 @@ data.transactions.forEach((transaction) => {
 			flex-direction: column;
 			background-color: var(--neutral-light-beige);
 			gap: 1rem;
+		}
+		@media (min-width: 768px) {
+			main {
+				padding: 2.5rem;
+			}
+			.donutSection {
+				display: flex;
+				flex-direction: row;
+				padding: 2rem;
+				.donutWrapper,
+				.spendingSummary {
+					width: 50%;
+				}
+
+				/* .donutWrapper {
+					display: flex;
+					flex-direction: column-reverse;
+				} */
+			}
 		}
 	</style>
 </Layout>
