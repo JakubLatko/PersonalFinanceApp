@@ -12,18 +12,16 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-.vscode
+
 # environment variables
 .env
 .env.production
-public/
-.vscode/
+
+
 README.md
 README-template.md
 .gitignore
-.netlify/
-.vscode/
-.prettierrc
+
 # macOS-specific files
 .DS_Store
 

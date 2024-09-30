@@ -1,0 +1,140 @@
+---
+import { Image } from "astro:assets";
+import transformDate from "../lib/transformDate";
+import transformMoney from "../lib/transformMoney";
+const { transaction, imageHidden } = Astro.props;
+
+interface Props {
+	transaction: Transaction;
+	categoryHidden?: boolean;
+	imageHidden?: boolean;
+}
+
+interface Transaction {
+	avatar: string;
+	name: string;
+	category: string;
+	date: string;
+	amount: number;
+	recurring: boolean;
+}
+---
+
+<div class="container">
+	<Image
+		class:list={[imageHidden ? "hidden" : null]}
+		src={transaction.avatar}
+		alt={""}
+		width={100}
+		height={100}
+	/>
+	<div class="nameAndCat">
+		<h2>{transaction.name}</h2>
+	</div>
+	<div class="dateAndAmount">
+		<h3>{transformDate(transaction.date)}</h3>
+		<h2>
+			{transformMoney(transaction.amount).string}
+		</h2>
+	</div>
+</div>
+
+<style lang="scss">
+	.container {
+		display: flex;
+		align-items: center;
+		border-bottom: 1px solid var(--neutral-light-grey);
+	}
+	img {
+		border-radius: 100vw;
+		object-fit: contain;
+		width: 2rem;
+		height: 2rem;
+		margin-right: 0.5rem;
+	}
+	.hidden {
+		display: none;
+	}
+	.nameAndCat,
+	.dateAndAmount {
+		h2 {
+			font-size: var(--fs-smallest);
+			font-weight: var(--fw-bold);
+			color: var(--primary-100);
+		}
+		h3 {
+			font-size: var(--fs-smallest);
+			font-weight: var(--fw-regular);
+			color: var(--neutral-dark-grey);
+		}
+	}
+	.dateAndAmount {
+		display: flex;
+		flex-direction: column-reverse;
+		text-align: right;
+		margin-left: auto;
+	}
+	h2,
+	h3 {
+		font-size: var(--fs-smallest);
+	}
+	@media only screen and (min-width: 768px) {
+		.container {
+			display: grid;
+			grid-template-columns: auto repeat(6, 1fr);
+			gap: 0.5rem;
+		}
+		img {
+			grid-column: 1;
+		}
+
+		.nameAndCat {
+			grid-column: 2 / span 3;
+		}
+
+		.dateAndAmount {
+			grid-column: 5 / span 3;
+		}
+		.hidden {
+			display: block;
+		}
+		.nameAndCat,
+		.dateAndAmount {
+			display: flex;
+			flex-direction: row;
+			// width: 40%;
+			width: 100%;
+			align-items: center;
+			justify-content: space-between;
+			text-align: initial;
+			h3 {
+				margin-inline: 2rem;
+			}
+		}
+
+		// .nameAndCat {
+		// 	justify-content: center;
+		// 	h2 {
+		// 		width: 80%;
+		// 	}
+		// 	h3 {
+		// 		width: 20%;
+		// 	}
+		// }
+	}
+	@media only screen and (min-width: 1366px) {
+		.nameAndCat {
+			h3 {
+				margin: 0;
+				text-align: left;
+				margin-right: 1rem;
+				min-width: 100px;
+			}
+		}
+		img {
+			width: 2.5rem;
+			height: 2.5rem;
+			aspect-ratio: 1 / 1;
+		}
+	}
+</style>

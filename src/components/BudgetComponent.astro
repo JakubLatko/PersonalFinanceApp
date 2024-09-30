@@ -1,14 +1,24 @@
 ---
-import Transaction from "./Transaction.astro";
+import BudgetTransaction from "./BudgetTransaction.astro";
 
 interface Props {
 	label: string;
 	maximum: number;
 	spent: number;
-	transaction: any;
 	theme: string;
 }
-const { label, maximum, spent, transaction, theme } = Astro.props;
+const { label, maximum, spent, theme } = Astro.props;
+
+import data from "../data.json";
+import type TransactionType from "@lib/transaction";
+
+let transactions: TransactionType[] = [];
+data.transactions.forEach((transaction) => {
+	if (transactions.length == 3) return;
+	if (transaction.category === label) {
+		transactions.push(transaction);
+	}
+});
 ---
 
 <div class="container">
@@ -17,7 +27,7 @@ const { label, maximum, spent, transaction, theme } = Astro.props;
 		<h2>{label}</h2>
 		<button><img src="/images/icon-ellipsis.svg" alt="" /></button>
 	</div>
-	<h3>Maximum of ${maximum.toFixed(2)}</h3>
+	<h3 class="maximum">Maximum of ${maximum.toFixed(2)}</h3>
 	<span class="bar">
 		<span
 			style=`background-color: ${theme}; width: ${(spent / maximum) * 100}% `
@@ -25,25 +35,35 @@ const { label, maximum, spent, transaction, theme } = Astro.props;
 	</span>
 	<div class="amounts">
 		<div>
-			<span></span>
-			<h3>${spent.toFixed(2)}</h3>
+			<span style=`background-color: ${theme}`></span>
+			<div class="spent">
+				<p>Spent</p>
+				<h3>${spent.toFixed(2)}</h3>
+			</div>
 		</div>
 		<div>
 			<span></span>
-			<h3>${(maximum - spent).toFixed(2)}</h3>
+			<div class="free">
+				<p>Free</p>
+				<h3>${(maximum - spent).toFixed(2)}</h3>
+			</div>
 		</div>
 	</div>
 	<div class="latestSpending">
-		<h2>Latest spending</h2>
-		<a href={"/transactions?category=" + label + "&sorting=Latest"}
-			>See all <img src="/images/icon-caret-right.svg" alt="" /></a
-		>
+		<div class="sectionHeader">
+			<h2>Latest spending</h2>
+			<a href={"/transactions?category=" + label + "&sorting=Latest"}
+				>See All <img src="/images/icon-caret-right.svg" alt="" /></a
+			>
+		</div>
+
 		<div class="transactions">
-			<Transaction
-				imageHidden={true}
-				categoryHidden={true}
-				transaction={transaction}
-			/>
+			{
+				transactions.map((transaction) => (
+					<hr/>
+					<BudgetTransaction transaction={transaction} imageHidden={true} />
+				))
+			}
 		</div>
 	</div>
 </div>
@@ -54,6 +74,8 @@ const { label, maximum, spent, transaction, theme } = Astro.props;
 		flex-direction: column;
 		background-color: var(--primary-900);
 		padding: 1.25rem;
+		gap: 1rem;
+		border-radius: 0.75rem;
 	}
 	.header {
 		display: flex;
@@ -92,8 +114,82 @@ const { label, maximum, spent, transaction, theme } = Astro.props;
 		border-radius: 100vw;
 		margin-right: 0.5rem;
 	}
+
+	.maximum {
+		font-size: var(--fs-body-sm);
+		color: var(--neutral-dark-grey);
+		font-weight: var(--fw-regular);
+	}
+	.amounts {
+		display: flex;
+		gap: 1rem;
+		background-color: var(--primary-900);
+		div {
+			display: flex;
+			flex-direction: row;
+			gap: 0 1rem;
+			width: calc(50% - 0.5rem);
+
+			span {
+				width: 0.25rem;
+				border-radius: 100vw;
+				min-height: 2rem;
+				background-color: var(--neutral-light-beige);
+			}
+			.spent,
+			.free {
+				display: flex;
+				flex-direction: column;
+				gap: 0.25rem;
+				p {
+					font-size: var(--fs-smallest);
+				}
+				h3 {
+					font-size: var(--fs-body-sm);
+					font-weight: var(--fw-bold);
+				}
+			}
+		}
+	}
 	.latestSpending {
 		background-color: var(--neutral-light-beige);
 		padding: 1rem;
+		border-radius: 0.75rem;
+	}
+	.sectionHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+		
+		a {
+			font-size: var(--fs-body-sm);
+			font-weight: var(--fw-regular);
+			color: var(--neutral-dark-grey);
+			opacity: 0.8;
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			img{
+				object-fit: contain;
+				width: .25rem;
+			}
+		}
+		h2 {
+			font-size: var(--fs-body);
+			color: var(--primary-100);
+		}
+	}
+	.transactions {
+		
+		hr{
+			color: var(--neutral-dark-grey);
+			opacity: .3;
+			width: 100%;
+			&:first-of-type {
+				display: none;
+			}
+		}
 	}
 </style>
