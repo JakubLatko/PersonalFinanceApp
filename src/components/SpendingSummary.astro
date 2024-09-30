@@ -52,4 +52,17 @@ const { label, spent, maximum, theme } = Astro.props;
 			width: 100%;
 		}
 	}
+
+	@media only screen and (min-width: 1920px) {
+		.bar {
+			height: 3rem;
+		}
+		.label {
+			font-size: var(--fs-body);
+			margin-left: 1rem;
+		}
+		h2 {
+			font-size: var(--fs-heading-2);
+		}
+	}
 </style>

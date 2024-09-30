@@ -15,18 +15,22 @@ import { ViewTransitions } from "astro:transitions";
 		<meta charset="UTF-8" />
 		<meta name="description" content="Astro description" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<link
-			href="favicon-light.svg"
+			id="favicon-light"
 			rel="icon"
-			media="(prefers-color-scheme: dark)"
-		/>
-		<link
-			href="favicon-dark.svg"
-			rel="icon"
+			href="/favicon-light.svg"
+			type="image/x-icon"
 			media="(prefers-color-scheme: light)"
 		/>
+		<link
+			id="favicon-light"
+			rel="icon"
+			href="/favicon-dark.svg"
+			type="image/x-icon"
+			media="(prefers-color-scheme: dark)"
+		/>
+
 		<title>{title}</title>
 	</head>
 	<body>

@@ -44,7 +44,7 @@ data.transactions.forEach((transaction) => {
 
 <Layout title="Welcome to Astro.">
 	<main>
-		<section>
+		<section class="headerSection">
 			<h1>Budgets</h1>
 			<button>+ Add New Budget</button>
 		</section>
@@ -185,6 +185,49 @@ data.transactions.forEach((transaction) => {
 					display: flex;
 					flex-direction: column-reverse;
 				} */
+			}
+		}
+		@media screen and (min-width: 1366px) {
+			main {
+				display: grid;
+				grid-template-columns: repeat(12, 1fr);
+				gap: 1rem;
+			}
+			.headerSection {
+				grid-column: 1 / span 12;
+				width: 100%;
+			}
+			.donutSection {
+				grid-column: 1 / span 5;
+				height: fit-content;
+				display: flex;
+				flex-direction: column;
+				.spendingSummary {
+					width: 100%;
+				}
+				.donutWrapper {
+					width: 100%;
+				}
+			}
+
+			.budgetSection {
+				grid-column: 6 / span 7;
+			}
+		}
+		@media screen and (min-width: 1920px) {
+			.budgetSummary {
+				margin-top: 2rem;
+				h2 {
+					font-size: var(--fs-heading-1);
+				}
+				p {
+					font-size: var(--fs-body);
+				}
+			}
+			.spendingSummaryWrapper {
+				display: flex;
+				flex-direction: column;
+				gap: 1rem;
 			}
 		}
 	</style>

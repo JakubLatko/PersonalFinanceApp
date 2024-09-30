@@ -201,4 +201,40 @@ data.transactions.forEach((transaction) => {
 			padding: 1.5rem;
 		}
 	}
+	@media screen and (min-width: 1366px) {
+		
+	}
+	@media screen and (min-width: 1920px) {
+		.accentDot{
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+		.header{
+			h2{
+				font-size: var(--fs-heading-1);
+			}
+		}
+		.maximum{
+			font-size: var(--fs-body);
+		}
+		.amounts{
+			div{
+				span{
+					width: .5rem;
+				}
+				.spent,
+				.free{
+					p{
+						font-size: var(--fs-body);
+					}
+					h3{
+						font-size: var(--fs-body);
+					}
+				}
+			}
+		}
+		.bar{
+			height: 3rem;
+		}
+	}
 </style>
