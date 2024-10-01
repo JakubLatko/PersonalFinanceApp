@@ -44,7 +44,7 @@ totalBills = totalBills * -1;
 		<section class="billsSection">
 			<form class="searchAndSorting">
 				<div class="inputWrapper">
-					<input type="text" />
+					<input type="text" placeholder="Search bills" />
 					<button>
 						<img src="/images/icon-search.svg" alt="" />
 					</button>
@@ -59,12 +59,12 @@ totalBills = totalBills * -1;
 						<option value="highest">Highest</option>
 						<option value="lowest">Lowest</option>
 					</select>
-					<button>
+					<button class="sortingBtn">
 						<img src="/images/icon-sort-mobile.svg" alt="" />
 					</button>
 				</div>
 			</form>
-			<div>
+			<div class="billsWrapper">
 				{
 					data.transactions.map((transaction) => {
 						if (transaction.recurring === true) {
@@ -160,6 +160,10 @@ totalBills = totalBills * -1;
 	}
 	.searchAndSorting {
 		display: flex;
+		align-items: center;
+		width: 100%;
+		justify-content: space-between;
+		margin-bottom: 1rem;
 		select,
 		label {
 			display: none;
@@ -172,8 +176,12 @@ totalBills = totalBills * -1;
 		border-radius: 0.75rem;
 		margin-right: 1rem;
 		font-size: var(--fs-body-sm);
+		max-width: 80vw;
+		flex-grow: 1;
 		input {
 			border: none;
+			background-color: transparent;
+			flex-grow: 1;
 		}
 		button {
 			border: none;
@@ -186,5 +194,13 @@ totalBills = totalBills * -1;
 				height: 1rem;
 			}
 		}
+	}
+
+	.sortingBtn {
+		border: 0;
+		background-color: transparent;
+		min-width: 10vw;
+	}
+	.billsWrapper {
 	}
 </style>
