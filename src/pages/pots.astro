@@ -1,93 +1,93 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import data from "../data.json";
+import PotComponent from "@components/PotComponent.astro";
 ---
 
-<Layout title='Dupa'>
-  Overview
-  Transactions
-  Budgets
-  Pots
-  Recurring Bills
+<Layout title="Dupa">
+	<main>
+		<section class="headerSection">
+			<h1>Pots</h1>
+			<button>+ Add New Pot</button>
+		</section>
+		<section class="potComponentSection">
+			{
+				data.pots.map((pot) => (
+					<PotComponent
+						saved={pot.total}
+						target={pot.target}
+						label={pot.name}
+						theme={pot.theme}
+					/>
+				))
+			}
+		</section>
+	</main>
 
-  Minimize Menu
+	<!-- Add New Pot Create a pot to set savings targets. These can help keep you on
+	track as you save for special purchases. Edit Pot If your saving targets
+	change, feel free to update your pots. Pot Name Target Theme Green Yellow Cyan
+	Navy Red Purple Turquoise Brown Magenta Blue Navy Grey Army Green Pink Gold
+	Orange Add Pot / Save Changes -->
 
-  Pots
+	<!-- Delete '' Are you sure you want to delete this pot? This
+	action cannot be reversed, and all the data inside it will be removed forever.
+	Yes, Confirm Deletion No, Go Back -->
 
-  Add New Pot
+	<!-- Add to '' Add money to your pot to keep it separate from your
+	main balance. As soon as you add this money, it will be deducted from your
+	current balance. New Amount Target of  -->
 
-  <!-- Add pots data -->
+	<!-- Amount to Add Confirm Addition -->
 
-  <!-- Add/Edit pot start -->
+	<!-- Withdraw from '' Withdraw from your pot to put money back in
+	your main balance. This will reduce the amount you have in this pot. New
+	Amount Target of  -->
 
-  Add New Pot
-  Create a pot to set savings targets. These can help keep you on track as you save for special purchases.
-
-  Edit Pot
-  If your saving targets change, feel free to update your pots.
-  
-  Pot Name
-  
-  Target
-  
-  Theme
-  Green
-  Yellow
-  Cyan
-  Navy
-  Red 
-  Purple
-  Turquoise
-  Brown
-  Magenta
-  Blue
-  Navy Grey
-  Army Green
-  Pink
-  Gold
-  Orange
-
-  Add Pot / Save Changes
-
-  <!-- Add/Edit budget end -->
-
-  <!-- Delete pot start -->
-
-  Delete '<!-- Pot name -->'
-
-  Are you sure you want to delete this pot? This action cannot be reversed, and all the data inside it will be removed forever.
-
-  Yes, Confirm Deletion
-  No, Go Back
-
-  <!-- Delete pot end -->
-
-  <!-- Add to pot start -->
-
-  Add to '<!-- Pot name -->'
-
-  Add money to your pot to keep it separate from your main balance. As soon as you add this money, it will be deducted from your current balance.
-
-  New Amount
-  Target of <!-- pot target -->
-
-  Amount to Add
-
-  Confirm Addition
-
-  <!-- Add to pot end -->
-
-  <!-- Withdraw from pot start -->
-
-  Withdraw from '<!-- pot name -->'
-
-  Withdraw from your pot to put money back in your main balance. This will reduce the amount you have in this pot.
-
-  New Amount
-  Target of <!-- pot target -->
-
-  Amount to Withdraw
-
-  Confirm Withdrawal
+	<!-- Amount to Withdraw Confirm Withdrawal -->
 </Layout>
-  
 
+<style lang="scss">
+	main {
+		display: flex;
+		flex-direction: column;
+		margin-inline: auto;
+		padding: 1rem;
+		width: 100%;
+		margin-block-end: 5rem;
+	}
+	h1 {
+		font-size: var(--fs-heading-1);
+		color: var(--primary-100);
+		/* margin-block: 5rem 3rem; */
+	}
+
+	section {
+		background-color: var(--primary-900);
+		/* padding-inline: 1rem; */
+		// padding: 1.5rem;
+		border-radius: 0.75rem;
+		&:first-of-type {
+			background-color: var(--neutral-light-beige);
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-block: 2rem 3rem;
+			padding: 0;
+			button {
+				background-color: var(--primary-100);
+				color: var(--primary-900);
+				border: 0;
+				border-radius: 0.5rem;
+				padding: 1rem 1rem;
+				font-size: var(--fs-body-sm);
+			}
+		}
+	}
+	.potComponentSection {
+		display: flex;
+		flex-direction: column;
+		gap: 2rem;
+		background-color: var(--neutral-light-beige);
+	}
+</style>
