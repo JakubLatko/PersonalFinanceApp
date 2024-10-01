@@ -1,35 +1,190 @@
 ---
-  import Layout from "../layouts/Layout.astro"
+import Layout from "../layouts/Layout.astro";
+import data from "../data.json";
+import BillsComponent from "@components/BillsComponent.astro";
+let totalBills: number = 0;
+
+data.transactions.forEach((transaction) => {
+	if (transaction.recurring === true) {
+		totalBills += transaction.amount;
+	}
+});
+totalBills = totalBills * -1;
 ---
-  
-  <Layout title="Welcome to Astro.">
-    Overview
-    Transactions
-    Budgets
-    Pots
-    Recurring Bills
-  
-    Minimize Menu
-  
-    Recurring Bills
-  
-    Total Bills
-  
-    Summary
-    Paid Bills
-    Total Upcoming
-    Due Soon
-  
-    Search bills
-    
-    Sort by
-    Latest
-    Oldest
-    A to Z
-    Z to A
-    Highest
-    Lowest
-  
-    <!-- Add bills data -->
-  </Layout>
- 
+
+<Layout title="Welcome to Astro.">
+	<main>
+		<h1>Recurring Bills</h1>
+		<section class="headerSection">
+			<div><img src="/images/icon-recurring-bills.svg" alt="" /></div>
+			<div>
+				<p>Total bills</p>
+				<h2>${totalBills}</h2>
+			</div>
+		</section>
+		<section class="summarySection">
+			<h3 class="sectionTitle">Summary</h3>
+			<div class="summaryWrapper">
+				<div>
+					<p>Paid Bills</p>
+					<h3>2 ($320.00)</h3>
+				</div>
+				<hr />
+				<div>
+					<p>Total Upcoming</p>
+					<h3>6 ($1,230.00)</h3>
+				</div>
+				<hr />
+				<div>
+					<p>Due Soon</p>
+					<h3>2 ($40.00)</h3>
+				</div>
+			</div>
+		</section>
+		<section class="billsSection">
+			<form class="searchAndSorting">
+				<div class="inputWrapper">
+					<input type="text" />
+					<button>
+						<img src="/images/icon-search.svg" alt="" />
+					</button>
+				</div>
+				<div>
+					<label for="sorting">Sort by</label>
+					<select name="sorting" id="sorting">
+						<option value="latest">Latest</option>
+						<option value="oldest">Oldest</option>
+						<option value="a_to_z">A to Z</option>
+						<option value="z_to_a">Z to A</option>
+						<option value="highest">Highest</option>
+						<option value="lowest">Lowest</option>
+					</select>
+					<button>
+						<img src="/images/icon-sort-mobile.svg" alt="" />
+					</button>
+				</div>
+			</form>
+			<div>
+				{
+					data.transactions.map((transaction) => {
+						if (transaction.recurring === true) {
+							return <BillsComponent transaction={transaction} />;
+						}
+					})
+				}
+			</div>
+		</section>
+	</main>
+
+	<!-- Add bills data -->
+</Layout>
+
+<style lang="scss">
+	main {
+		display: flex;
+		flex-direction: column;
+		margin-inline: auto;
+		padding: 1rem;
+		width: 100%;
+		margin-block-end: 5rem;
+	}
+	h1 {
+		font-size: var(--fs-heading-1);
+		color: var(--primary-100);
+		margin-block: 2rem;
+	}
+
+	section {
+		background-color: var(--primary-900);
+		/* padding-inline: 1rem; */
+		padding: 1.25rem;
+		border-radius: 0.75rem;
+	}
+
+	.headerSection {
+		background-color: var(--primary-100);
+		color: var(--primary-900);
+		padding: 1.25rem;
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		margin-block-end: 1rem;
+		h2 {
+			font-size: var(--fs-heading-1);
+			font-weight: var(--fw-bold);
+		}
+		p {
+			font-size: var(--fs-body-sm);
+			font-weight: var(--fw-regular);
+		}
+	}
+	.summarySection {
+		margin-bottom: 1rem;
+	}
+	.sectionTitle {
+		font-size: var(--fs-body);
+		margin-bottom: 1rem;
+	}
+	.summaryWrapper {
+		display: flex;
+		flex-direction: column;
+		hr {
+			width: 100%;
+			opacity: 0.3;
+		}
+		div {
+			display: flex;
+			justify-content: space-between;
+			padding-block: 1rem;
+			h3 {
+				font-size: var(--fs-smallest);
+				font-weight: var(--fw-bold);
+			}
+			p {
+				font-size: var(--fs-smallest);
+				color: var(--neutral-dark-grey);
+				font-weight: var(--fw-regular);
+			}
+			&:last-of-type {
+				h3,
+				p {
+					color: var(--secondary-red);
+				}
+			}
+		}
+	}
+
+	.billSection {
+		display: flex;
+		flex-direction: column;
+	}
+	.searchAndSorting {
+		display: flex;
+		select,
+		label {
+			display: none;
+		}
+	}
+	.inputWrapper {
+		display: flex;
+		border: 1px solid var(--neutral-grey);
+		padding: 0.5rem;
+		border-radius: 0.75rem;
+		margin-right: 1rem;
+		font-size: var(--fs-body-sm);
+		input {
+			border: none;
+		}
+		button {
+			border: none;
+			background-color: transparent;
+			padding: 0;
+			width: 1rem;
+			aspect-ratio: 1;
+			img {
+				aspect-ratio: 1;
+				height: 1rem;
+			}
+		}
+	}
+</style>
