@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import data from "../data.json";
 import BillsComponent from "@components/BillsComponent.astro";
+import type TransactionType from "@lib/transaction";
 let totalBills: number = 0;
 
 data.transactions.forEach((transaction) => {
@@ -10,6 +11,28 @@ data.transactions.forEach((transaction) => {
 	}
 });
 totalBills = totalBills * -1;
+
+const recurringBills: TransactionType[] = [];
+const names: string[] = [];
+const rejectedBills: TransactionType[] = [];
+data.transactions.forEach((transaction) => {
+	if (transaction.recurring === true) {
+		if (names.includes(transaction.name)) {
+			return;
+		} else {
+			names.push(transaction.name);
+
+			if (recurringBills.includes(transaction)) {
+				rejectedBills.push(transaction);
+				return;
+			}
+
+			if (transaction.recurring === true) {
+				recurringBills.push(transaction);
+			}
+		}
+	}
+});
 ---
 
 <Layout title="Welcome to Astro.">
@@ -66,10 +89,8 @@ totalBills = totalBills * -1;
 			</form>
 			<div class="billsWrapper">
 				{
-					data.transactions.map((transaction) => {
-						if (transaction.recurring === true) {
-							return <BillsComponent transaction={transaction} />;
-						}
+					recurringBills.map((transaction) => {
+						return <BillsComponent transaction={transaction} />;
 					})
 				}
 			</div>
