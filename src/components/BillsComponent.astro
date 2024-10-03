@@ -1,49 +1,31 @@
 ---
 import { Image } from "astro:assets";
 import recurringDate from "@lib/recurring-date.ts";
+import type TransactionType from "@lib/transaction";
 const { transaction } = Astro.props;
 
-const date = new Date("2024-08-03T22:00:00.000Z"); // "";
+const date = new Date("2024-08-28T22:00:00.000Z"); // "";
 const transactionDate = new Date(transaction.date);
-const dayInMilliseconds = 24 * 60 * 60 * 1000;
-let daysDiff = Math.floor(
-	(transactionDate.getDate() - date.getDate()) / dayInMilliseconds
-);
-
+let daysDiff = transactionDate.getDate() - date.getDate(); /// dayInMilliseconds;
 const todaysDateAsDay = date.getDate();
 const billAsDay = transactionDate.getDate();
 
 let billPaid: boolean = false;
 let billDue: boolean = false;
-if (todaysDateAsDay > billAsDay && Math.abs(daysDiff) < 5) {
+if (todaysDateAsDay > billAsDay) {
 	billPaid = true;
 }
-
-if (billAsDay > todaysDateAsDay && Math.abs(daysDiff) < 5) {
+if (
+	(billAsDay > todaysDateAsDay && Math.abs(daysDiff) < 5) ||
+	billAsDay === todaysDateAsDay
+) {
 	billDue = true;
 }
 
-console.log({
-	billAsDay,
-	todaysDateAsDay,
-	daysDiff,
-	billPaid,
-	billDue,
-});
-
 interface Props {
-	transaction: Transaction;
+	transaction: TransactionType;
 	categoryHidden?: boolean;
 	imageHidden?: boolean;
-}
-
-interface Transaction {
-	avatar: string;
-	name: string;
-	category: string;
-	date: string;
-	amount: number;
-	recurring: boolean;
 }
 ---
 
@@ -54,14 +36,16 @@ interface Transaction {
 			<h2>{transaction.name}</h2>
 		</div>
 		<div class="monthlyWrapper">
-			<h3 class="monthly">Monthly - {recurringDate(transaction.date)}</h3>
+			<h3 class="monthly">
+				Monthly - {recurringDate(transaction.date)}
+			</h3>
 			{billPaid ? <img src="/images/icon-bill-paid.svg" alt="" /> : null}
 			{billDue ? <img src="/images/icon-bill-due.svg" alt="" /> : null}
 		</div>
 	</div>
 
 	<div class="dateAndAmount">
-		<h2>
+		<h2 class:list={[billDue ? "billDue" : null]}>
 			${(transaction.amount * -1).toFixed(2)}
 		</h2>
 	</div>
@@ -88,6 +72,9 @@ interface Transaction {
 			font-size: var(--fs-body-sm);
 			font-weight: var(--fw-bold);
 			color: var(--primary-100);
+		}
+		.billDue {
+			color: var(--secondary-red);
 		}
 	}
 	.nameAndCat {

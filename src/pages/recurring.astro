@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import data from "../data.json";
 import BillsComponent from "@components/BillsComponent.astro";
 import type TransactionType from "@lib/transaction";
+import ts from "typescript";
 let totalBills: number = 0;
 
 data.transactions.forEach((transaction) => {
@@ -15,24 +16,42 @@ totalBills = totalBills * -1;
 const recurringBills: TransactionType[] = [];
 const names: string[] = [];
 const rejectedBills: TransactionType[] = [];
+
 data.transactions.forEach((transaction) => {
 	if (transaction.recurring === true) {
 		if (names.includes(transaction.name)) {
 			return;
 		} else {
 			names.push(transaction.name);
-
-			if (recurringBills.includes(transaction)) {
-				rejectedBills.push(transaction);
-				return;
-			}
-
-			if (transaction.recurring === true) {
-				recurringBills.push(transaction);
-			}
 		}
 	}
 });
+data.transactions.forEach((transaction) => {
+	if (transaction.recurring === true) {
+		if (names.includes(transaction.name)) {
+			rejectedBills.push(transaction);
+			return;
+		} else {
+			recurringBills.push(transaction);
+		}
+	}
+});
+const unikalneTransakcje: any = {};
+const oczyszczoneTransakcje: TransactionType[] = [];
+
+data.transactions.forEach((transaction) => {
+	if (!transaction.recurring) return;
+	if (!unikalneTransakcje[transaction.name]) {
+		unikalneTransakcje[transaction.name] = true;
+		oczyszczoneTransakcje.push(transaction); // Zostawiamy tylko pierwszą transakcję o danej nazwie
+	}
+});
+
+oczyszczoneTransakcje.sort((a, b) => {
+	// @ts-ignore
+	return new Date(a.date).getDate() - new Date(b.date).getDate();
+});
+console.log(oczyszczoneTransakcje);
 ---
 
 <Layout title="Welcome to Astro.">
@@ -89,7 +108,7 @@ data.transactions.forEach((transaction) => {
 			</form>
 			<div class="billsWrapper">
 				{
-					recurringBills.map((transaction) => {
+					oczyszczoneTransakcje.map((transaction) => {
 						return <BillsComponent transaction={transaction} />;
 					})
 				}
