@@ -3,86 +3,124 @@ import Layout from "../layouts/Layout.astro";
 import data from "../data.json";
 import BillsComponent from "@components/BillsComponent.astro";
 import type TransactionType from "@lib/transaction";
-import ts from "typescript";
-let totalBills: number = 0;
+import type RecurringBill from "@lib/recurringBill";
+
+const uniqueTransactions: any = {};
+const filteredTransactions: TransactionType[] = [];
 
 data.transactions.forEach((transaction) => {
+	if (!transaction.recurring) return;
+	if (!uniqueTransactions[transaction.name]) {
+		uniqueTransactions[transaction.name] = true;
+		filteredTransactions.push(transaction);
+	}
+});
+
+filteredTransactions.sort((a, b) => {
+	// @ts-ignore
+	return new Date(a.date).getDate() - new Date(b.date).getDate();
+});
+
+const date = new Date("2024-08-28T22:00:00.000Z");
+const finalBills: RecurringBill[] = [];
+
+filteredTransactions.forEach((transaction) => {
+	const transactionDate = new Date(transaction.date);
+	let daysDiff = transactionDate.getDate() - date.getDate();
+	const todaysDateAsDay = date.getDate();
+	const billAsDay = transactionDate.getDate();
+
+	let billPaid: boolean = false;
+	let billDue: boolean = false;
+	if (todaysDateAsDay > billAsDay) {
+		billPaid = true;
+	}
+	if (
+		(billAsDay > todaysDateAsDay && Math.abs(daysDiff) < 5) ||
+		billAsDay === todaysDateAsDay
+	) {
+		billDue = true;
+	}
+	const finalBill: RecurringBill = {
+		avatar: transaction.avatar,
+		amount: transaction.amount,
+		category: transaction.category,
+		name: transaction.name,
+		date: transaction.date,
+		recurring: transaction.recurring,
+		billDue: billDue,
+		billPaid: billPaid,
+		daysDiff: daysDiff,
+	};
+	finalBills.push(finalBill);
+});
+
+let paidBillsCost: number = 0;
+let paidBillsAmount: number = 0;
+
+let dueBillsCost: number = 0;
+let dueBillsAmount: number = 0;
+
+let totalUpcoming: number = 0;
+let totalUpcomingAmount: number = 0;
+
+finalBills.forEach((bill) => {
+	if (bill.billPaid) {
+		paidBillsCost += bill.amount;
+		paidBillsAmount++;
+	}
+
+	if (bill.billDue) {
+		dueBillsCost += bill.amount;
+		dueBillsAmount++;
+	}
+	if ((!bill.billDue && !bill.billPaid) || bill.billDue) {
+		totalUpcoming += bill.amount;
+		totalUpcomingAmount++;
+	}
+});
+
+let totalBills: number = 0;
+finalBills.forEach((transaction) => {
 	if (transaction.recurring === true) {
 		totalBills += transaction.amount;
 	}
 });
 totalBills = totalBills * -1;
-
-const recurringBills: TransactionType[] = [];
-const names: string[] = [];
-const rejectedBills: TransactionType[] = [];
-
-data.transactions.forEach((transaction) => {
-	if (transaction.recurring === true) {
-		if (names.includes(transaction.name)) {
-			return;
-		} else {
-			names.push(transaction.name);
-		}
-	}
-});
-data.transactions.forEach((transaction) => {
-	if (transaction.recurring === true) {
-		if (names.includes(transaction.name)) {
-			rejectedBills.push(transaction);
-			return;
-		} else {
-			recurringBills.push(transaction);
-		}
-	}
-});
-const unikalneTransakcje: any = {};
-const oczyszczoneTransakcje: TransactionType[] = [];
-
-data.transactions.forEach((transaction) => {
-	if (!transaction.recurring) return;
-	if (!unikalneTransakcje[transaction.name]) {
-		unikalneTransakcje[transaction.name] = true;
-		oczyszczoneTransakcje.push(transaction); // Zostawiamy tylko pierwszą transakcję o danej nazwie
-	}
-});
-
-oczyszczoneTransakcje.sort((a, b) => {
-	// @ts-ignore
-	return new Date(a.date).getDate() - new Date(b.date).getDate();
-});
-console.log(oczyszczoneTransakcje);
 ---
 
 <Layout title="Welcome to Astro.">
 	<main>
 		<h1>Recurring Bills</h1>
-		<section class="headerSection">
-			<div><img src="/images/icon-recurring-bills.svg" alt="" /></div>
-			<div>
-				<p>Total bills</p>
-				<h2>${totalBills}</h2>
-			</div>
+		<section class="topSectionWrapper">
+			<section class="headerSection">
+				<div><img src="/images/icon-recurring-bills.svg" alt="" /></div>
+				<div>
+					<p>Total bills</p>
+					<h2>${totalBills}</h2>
+				</div>
+			</section>
+			<section class="summarySection">
+				<h3 class="sectionTitle">Summary</h3>
+				<div class="summaryWrapper">
+					<div>
+						<p>Paid Bills</p>
+						<h3>{paidBillsAmount} (${(paidBillsCost * -1).toFixed(2)})</h3>
+					</div>
+					<hr />
+					<div>
+						<p>Total Upcoming</p>
+						<h3>{totalUpcomingAmount} (${(totalUpcoming * -1).toFixed(2)})</h3>
+					</div>
+					<hr />
+					<div>
+						<p>Due Soon</p>
+						<h3>{dueBillsAmount} (${(dueBillsCost * -1).toFixed(2)})</h3>
+					</div>
+				</div>
+			</section>
 		</section>
-		<section class="summarySection">
-			<h3 class="sectionTitle">Summary</h3>
-			<div class="summaryWrapper">
-				<div>
-					<p>Paid Bills</p>
-					<h3>2 ($320.00)</h3>
-				</div>
-				<hr />
-				<div>
-					<p>Total Upcoming</p>
-					<h3>6 ($1,230.00)</h3>
-				</div>
-				<hr />
-				<div>
-					<p>Due Soon</p>
-					<h3>2 ($40.00)</h3>
-				</div>
-			</div>
-		</section>
+
 		<section class="billsSection">
 			<form class="searchAndSorting">
 				<div class="inputWrapper">
@@ -91,7 +129,7 @@ console.log(oczyszczoneTransakcje);
 						<img src="/images/icon-search.svg" alt="" />
 					</button>
 				</div>
-				<div>
+				<div class="selectWrapper">
 					<label for="sorting">Sort by</label>
 					<select name="sorting" id="sorting">
 						<option value="latest">Latest</option>
@@ -106,9 +144,14 @@ console.log(oczyszczoneTransakcje);
 					</button>
 				</div>
 			</form>
+			<div class="billsHeader">
+				<h3>Bill title</h3>
+				<h3>Due Date</h3>
+				<h3>Amount</h3>
+			</div>
 			<div class="billsWrapper">
 				{
-					oczyszczoneTransakcje.map((transaction) => {
+					finalBills.map((transaction) => {
 						return <BillsComponent transaction={transaction} />;
 					})
 				}
@@ -222,6 +265,7 @@ console.log(oczyszczoneTransakcje);
 			border: none;
 			background-color: transparent;
 			flex-grow: 1;
+			font-size: var(--fs-smallest);
 		}
 		button {
 			border: none;
@@ -241,6 +285,92 @@ console.log(oczyszczoneTransakcje);
 		background-color: transparent;
 		min-width: 10vw;
 	}
-	.billsWrapper {
+	.topSectionWrapper {
+		padding: 0;
+	}
+	.billsHeader {
+		display: none;
+	}
+	@media only screen and (min-width: 768px) {
+		main {
+			padding-inline: 2.5rem;
+		}
+		.topSectionWrapper {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			gap: 1rem;
+			section {
+				width: calc(50% - 0.5rem);
+			}
+		}
+		.headerSection {
+			display: flex;
+			flex-direction: column;
+			align-items: flex-start;
+			justify-content: space-around;
+			padding-inline: 2rem;
+			img {
+				width: 2.5rem;
+			}
+		}
+		.inputWrapper {
+			max-width: 50vw;
+			// padding: 0.75rem;
+			input {
+			}
+		}
+		.sortingBtn {
+			display: none;
+		}
+		.searchAndSorting {
+			display: flex;
+
+			label,
+			select {
+				display: block;
+			}
+		}
+		.selectWrapper {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+		select {
+			padding: 0.5rem;
+			border-radius: 0.5rem;
+			border: 1px solid var(--neutral-grey);
+			font-size: var(--fs-body-sm);
+			color: var(--primary-100);
+		}
+		label {
+			color: var(--primary-100);
+			font-size: var(--fs-body-sm);
+			height: fit-content;
+		}
+		option {
+			font-size: var(--fs-smallest);
+			padding: 1rem 0.5rem;
+			margin-block: 1rem;
+			border: 0;
+			width: fit-content;
+		}
+		.billsHeader {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			margin-block: 2rem 1rem;
+			h3 {
+				font-size: var(--fs-smallest);
+				color: var(--neutral-dark-grey);
+				font-weight: var(--fw-regular);
+				&:first-of-type {
+					grid-column: 1 / span 2;
+				}
+				&:last-of-type {
+					grid-column: 4;
+					text-align: right;
+				}
+			}
+		}
 	}
 </style>
