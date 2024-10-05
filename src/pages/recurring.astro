@@ -287,6 +287,7 @@ totalBills = totalBills * -1;
 	}
 	.topSectionWrapper {
 		padding: 0;
+		background-color: transparent;
 	}
 	.billsHeader {
 		display: none;
@@ -371,6 +372,80 @@ totalBills = totalBills * -1;
 					text-align: right;
 				}
 			}
+		}
+	}
+	@media only screen and (min-width: 1366px) {
+		main {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			grid-template-rows: auto 1fr;
+			gap: 0 3rem;
+		}
+		h1 {
+			height: fit-content;
+			margin-block: 2rem;
+		}
+		.billsSection {
+			grid-column: 2 / span 2;
+			width: 100%;
+			height: fit-content;
+		}
+		.headerSection {
+			padding-block: 2rem;
+			gap: 2rem;
+			justify-content: space-between;
+		}
+		.topSectionWrapper {
+			grid-column: 1;
+			display: flex;
+			flex-direction: column;
+			justify-content: initial;
+			section {
+				width: 100%;
+			}
+		}
+		.inputWrapper {
+			max-width: 25vw;
+		}
+	}
+	@media screen and (min-width: 1920px) {
+		main {
+			padding-inline: 5rem;
+		}
+		.summaryWrapper {
+			div {
+				p {
+					font-size: var(--fs-body-sm);
+				}
+				h3 {
+					font-size: var(--fs-body);
+				}
+			}
+		}
+		.inputWrapper {
+			gap: 0.5rem;
+			input {
+				font-size: var(--fs-body-sm);
+				padding: 0.5rem 1rem;
+			}
+			button {
+				margin-right: 0.5rem;
+			}
+		}
+		select,
+		label,
+		option {
+			font-size: var(--fs-body);
+		}
+
+		.billsHeader {
+			h3 {
+				font-size: var(--fs-body-sm);
+			}
+		}
+
+		.sectionTitle {
+			font-size: var(--fs-heading-2);
 		}
 	}
 </style>
