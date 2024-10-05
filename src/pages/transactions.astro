@@ -3,12 +3,15 @@ import Layout from "../layouts/Layout.astro";
 import Transaction from "@components/Transaction.astro";
 import data from "src/data.json";
 import type TransactionType from "@lib/transaction.ts";
+import { array } from "astro:schema";
+
 const url = Astro.url;
 const params = url.searchParams;
 
-if (!params.get("category") || !params.get("sorting")) {
+if (!params.get("category") || !params.get("sorting") || !params.get("name")) {
 	params.set("category", "All");
 	params.set("sorting", "Latest");
+	params.set("name", "");
 	Astro.url.search = params.toString();
 }
 if (!params.get("page")) {
@@ -27,6 +30,7 @@ data.transactions.forEach((element) => {
 		dataToShow.push(element);
 	}
 });
+
 switch (params.get("sorting")) {
 	case "Latest":
 		dataToShow.sort((a: TransactionType, b: TransactionType) => {
@@ -64,6 +68,22 @@ switch (params.get("sorting")) {
 		break;
 }
 
+let tempArray: TransactionType[] = [];
+dataToShow.forEach((element, index) => {
+	const searchedName = params.get("name");
+	if (!searchedName) return;
+	if (element.name.toLowerCase().includes(searchedName.toLowerCase())) {
+		console.log({ searchedName, element });
+		tempArray.push(element);
+	} else {
+		dataToShow.slice(index, 1);
+	}
+});
+if (tempArray.length !== 0) {
+	dataToShow.length = 0;
+	dataToShow.push(...tempArray);
+}
+
 let paginationButtons: number[] = [];
 for (let i = 0; i < dataToShow.length / 10; i++) {
 	paginationButtons.push(i + 1);
@@ -87,8 +107,10 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		<section>
 			<form>
 				<div class="inputWrapper">
-					<input type="text" placeholder="Search transactions" />
-					<button><img src="/images/icon-search.svg" alt="" /></button>
+					<input name="name" type="text" placeholder="Search transactions" />
+					<button type="submit"
+						><img src="/images/icon-search.svg" alt="" /></button
+					>
 				</div>
 				<div class="sortingWrapper">
 					<label class="desktopOnly" for="sortingSelect">Sort by</label>
@@ -300,8 +322,22 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		border-radius: 0.75rem;
 		margin-right: 1rem;
 		font-size: var(--fs-body-sm);
+		transition: 150ms linear;
+		&:has(input:focus),
+		&:has(input:hover),
+		&:has(input:active) {
+			& {
+				border: 1px solid var(--primary-100);
+				transition: 150ms linear;
+			}
+		}
 		input {
 			border: none;
+			&:focus,
+			&:active {
+				border: 0;
+				outline: 0;
+			}
 		}
 		button {
 			border: none;
@@ -313,6 +349,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 				aspect-ratio: 1;
 				height: 1rem;
 			}
+			cursor: pointer;
 		}
 	}
 	.filteringBtn,
@@ -332,10 +369,12 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		color: var(--primary-100);
 	}
 	.pageBtns {
 		display: flex;
 		gap: 0.5rem;
+		color: var(--primary-100);
 	}
 	.navBtn {
 		aspect-ratio: 1;
@@ -347,14 +386,21 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		width: 2rem;
 		border-radius: 0.25rem;
 		text-decoration: none;
+		transition: 150ms ease-in-out;
 		p {
 			display: none;
 		}
 		img {
 			display: block;
 		}
+		&:hover {
+			background-color: var(--neutral-dark-beige);
+			transition: 150ms ease-in-out;
+			border: 1px solid var(--neutral-dark-beige);
+			color: var(--primary-900);
+		}
 	}
-	.active {
+	.navBtn.active {
 		background-color: var(--primary-100);
 		color: var(--primary-900);
 	}
@@ -468,7 +514,9 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		section:last-of-type {
 			padding-block-end: 3rem;
 		}
-
+		.navBtn {
+			color: var(--primary-100);
+		}
 		.tableHeaders {
 			h2:nth-of-type(2) {
 				margin-left: 1rem;
