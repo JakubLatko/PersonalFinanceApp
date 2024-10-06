@@ -8,7 +8,7 @@ import PotComponent from "@components/PotComponent.astro";
 	<main>
 		<section class="headerSection">
 			<h1>Pots</h1>
-			<button>+ Add New Pot</button>
+			<button class="addNewPotBtn">+ Add New Pot</button>
 		</section>
 		<section class="potComponentSection">
 			{
@@ -24,27 +24,58 @@ import PotComponent from "@components/PotComponent.astro";
 		</section>
 	</main>
 
-	<!-- Add New Pot Create a pot to set savings targets. These can help keep you on
-	track as you save for special purchases. Edit Pot If your saving targets
-	change, feel free to update your pots. Pot Name Target Theme Green Yellow Cyan
-	Navy Red Purple Turquoise Brown Magenta Blue Navy Grey Army Green Pink Gold
-	Orange Add Pot / Save Changes -->
-
-	<!-- Delete '' Are you sure you want to delete this pot? This
-	action cannot be reversed, and all the data inside it will be removed forever.
-	Yes, Confirm Deletion No, Go Back -->
-
-	<!-- Add to '' Add money to your pot to keep it separate from your
-	main balance. As soon as you add this money, it will be deducted from your
-	current balance. New Amount Target of  -->
-
-	<!-- Amount to Add Confirm Addition -->
-
-	<!-- Withdraw from '' Withdraw from your pot to put money back in
-	your main balance. This will reduce the amount you have in this pot. New
-	Amount Target of  -->
-
-	<!-- Amount to Withdraw Confirm Withdrawal -->
+	<dialog class="addNewPotDialog">
+		<div class="dialogWrapper">
+			<div class="dialogHeader">
+				<h2>Add new Pot</h2>
+				<button class="closeAddNewPotDialog"
+					><img src="/images/icon-close.svg" alt="Close window" /></button
+				>
+			</div>
+			<p>
+				Create a pot to set savings targets. These can help keep you on track as
+				you save for special purchases.
+			</p>
+			<form class="dialogForm">
+				<div>
+					<label for="potName">Pot Category</label>
+					<input
+						type="text"
+						name="potName"
+						id="potName"
+						placeholder="e.g Rainy Days"
+						max="30"
+					/>
+				</div>
+				<div>
+					<label for="targetForPot">Target</label>
+					<input
+						placeholder="$ e.g 2000"
+						type="number"
+						name="targetForPot"
+						id="targetForPot"
+					/>
+				</div>
+				<div>
+					<label for="theme">Theme</label>
+					<select name="theme" id="theme">
+						<option value="Green"> Green</option>
+						<option value="Yellow"> Yellow</option>
+						<option value="Cyan"> Cyan</option>
+						<option value="Navy"> Navy</option>
+						<option value="Red"> Red</option>
+						<option value="Purple"> Purple</option>
+						<option value="Turquoise"> Turquoise</option>
+						<option value="Brown"> Brown</option>
+						<option value="Magenta"> Magenta</option>
+						<option value="Blue"> Blue</option>
+						<option value="Navy Grey"> Navy Grey</option>
+					</select>
+				</div>
+				<button>Add pot</button>
+			</form>
+		</div>
+	</dialog>
 </Layout>
 
 <style lang="scss">
@@ -90,6 +121,80 @@ import PotComponent from "@components/PotComponent.astro";
 		gap: 2rem;
 		background-color: var(--neutral-light-beige);
 	}
+
+	dialog {
+		border: 0;
+		border-radius: 0.75rem;
+	}
+
+	.dialogWrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		p {
+			font-size: var(--fs-body-sm);
+			color: var(--neutral-dark-grey);
+			line-height: 150%;
+		}
+	}
+	.dialogHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		h2 {
+			font-size: var(--fs-heading-2);
+			color: var(--primary-100);
+		}
+		button {
+			display: grid;
+			place-items: center;
+			border-radius: 50%;
+			width: 1.5rem;
+			height: 1.5rem;
+			aspect-ratio: 1;
+			border: 1px solid var(--neutral-dark-grey);
+			background-color: transparent;
+		}
+	}
+	.dialogForm {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		select,
+		option {
+			max-height: 200px;
+
+			overflow-y: auto;
+		}
+		div {
+			display: flex;
+			flex-direction: column;
+			label {
+				font-size: var(--fs-smallest);
+				color: var(--neutral-dark-grey);
+			}
+			input,
+			select {
+				padding: 0.5rem;
+				border-radius: 0.5rem;
+				border: 1px solid var(--neutral-dark-grey);
+				font-size: var(--fs-body-sm);
+			}
+		}
+
+		button {
+			background-color: var(--primary-100);
+			color: var(--primary-900);
+			border-radius: 0.5rem;
+			border: 0;
+			cursor: pointer;
+			padding-block: 1em;
+			font-size: var(--fs-body-sm);
+			font-weight: var(--fw-bold);
+			margin-top: 1rem;
+		}
+	}
+
 	@media only screen and (min-width: 1366px) {
 		main {
 			padding: 2.5rem;
@@ -100,3 +205,80 @@ import PotComponent from "@components/PotComponent.astro";
 		}
 	}
 </style>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const addNewPotBtn =
+			document.querySelector<HTMLButtonElement>(".addNewPotBtn");
+		const addNewPotDialog =
+			document.querySelector<HTMLDialogElement>(".addNewPotDialog");
+		const closeAddNewPotDialog = document.querySelector<HTMLButtonElement>(
+			".closeAddNewPotDialog"
+		);
+		addNewPotBtn?.addEventListener("click", () => {
+			addNewPotDialog?.showModal();
+		});
+
+		closeAddNewPotDialog?.addEventListener("click", () => {
+			addNewPotDialog?.close();
+		});
+
+		const potMenuBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.potMenuBtn`);
+		const potMenus = document.querySelectorAll<HTMLDivElement>(`.potMenu`);
+		console.log(potMenus);
+
+		potMenuBtns.forEach((button, index) =>
+			button.addEventListener("click", () => {
+				potMenus[index].classList.toggle("potMenuVisible");
+			})
+		);
+
+		const editDialogBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.editDialogBtn`);
+		const deleteDialogBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.deleteDialogBtn`);
+		const editDialogs =
+			document.querySelectorAll<HTMLDialogElement>(`.editDialog`);
+		const deleteDialogs =
+			document.querySelectorAll<HTMLDialogElement>(`.deleteDialog`);
+
+		editDialogBtns.forEach((button, index) =>
+			button.addEventListener("click", () => {
+				editDialogs[index].showModal();
+			})
+		);
+		deleteDialogBtns.forEach((button, index) =>
+			button.addEventListener("click", () => {
+				deleteDialogs[index].showModal();
+			})
+		);
+
+		const closeEditDialogBtn =
+			document.querySelectorAll<HTMLButtonElement>(".closeEditDialog");
+		const cancelBtns =
+			document.querySelectorAll<HTMLButtonElement>(".cancelBtn");
+		const deleteDialogCloseBtns =
+			document.querySelectorAll<HTMLButtonElement>(".deleteDialogClose");
+
+		deleteDialogCloseBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				deleteDialogs[index].close();
+				potMenus[index].classList.toggle("potMenuVisible");
+			});
+		});
+
+		cancelBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				deleteDialogs[index].close();
+				potMenus[index].classList.toggle("potMenuVisible");
+			});
+		});
+		closeEditDialogBtn.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				editDialogs[index].close();
+				potMenus[index].classList.toggle("potMenuVisible");
+			});
+		});
+	});
+</script>
