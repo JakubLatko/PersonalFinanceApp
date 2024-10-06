@@ -3,17 +3,17 @@ import Layout from "../layouts/Layout.astro";
 import Transaction from "@components/Transaction.astro";
 import data from "src/data.json";
 import type TransactionType from "@lib/transaction.ts";
-import { array } from "astro:schema";
 
 const url = Astro.url;
 const params = url.searchParams;
 
-if (!params.get("category") || !params.get("sorting") || !params.get("name")) {
+if (!params.get("category") || !params.get("sorting")) {
 	params.set("category", "All");
 	params.set("sorting", "Latest");
 	params.set("name", "");
 	Astro.url.search = params.toString();
 }
+
 if (!params.get("page")) {
 	params.set("page", "1");
 }
@@ -28,6 +28,7 @@ data.transactions.forEach((element) => {
 	}
 	if (element.category === params.get("category")) {
 		dataToShow.push(element);
+	} else {
 	}
 });
 
@@ -73,15 +74,19 @@ dataToShow.forEach((element, index) => {
 	const searchedName = params.get("name");
 	if (!searchedName) return;
 	if (element.name.toLowerCase().includes(searchedName.toLowerCase())) {
-		console.log({ searchedName, element });
 		tempArray.push(element);
 	} else {
 		dataToShow.slice(index, 1);
 	}
 });
+
 if (tempArray.length !== 0) {
 	dataToShow.length = 0;
 	dataToShow.push(...tempArray);
+}
+
+if (tempArray.length === 0 && params.get("name")) {
+	dataToShow.length = 0;
 }
 
 let paginationButtons: number[] = [];
@@ -107,19 +112,23 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		<section>
 			<form>
 				<div class="inputWrapper">
-					<input name="name" type="text" placeholder="Search transactions" />
+					<input
+						value={params.get("name")}
+						type="text"
+						name="name"
+						placeholder="Search transactions"
+					/>
 					<button type="submit"
-						><img src="/images/icon-search.svg" alt="" /></button
+						><img src="/images/icon-search.svg" alt="Submit" /></button
 					>
 				</div>
 				<div class="sortingWrapper">
 					<label class="desktopOnly" for="sortingSelect">Sort by</label>
-					<button class="mobileOnly sortingBtn"
-						><img src="/images/icon-sort-mobile.svg" alt="" /></button
+					<button class="mobileOnly sortingBtn" type="button"
+						><img src="/images/icon-sort-mobile.svg" alt="Submit" /></button
 					>
 					<select
 						onchange="this.form.submit()"
-						class="desktopOnly"
 						name="sorting"
 						id="sortingSelect">
 						<option selected={params.get("sorting") === "Latest"} value="Latest"
@@ -145,12 +154,14 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 				</div>
 				<div class="filteringWrapper">
 					<label class="desktopOnly" for="categorySelect">Category</label>
-					<button class="mobileOnly filteringBtn"
-						><img src="/images/icon-filter-mobile.svg" alt="" /></button
+					<button class="mobileOnly filteringBtn" type="button"
+						><img
+							src="/images/icon-filter-mobile.svg"
+							alt="Filter by category"
+						/></button
 					>
 					<select
 						onchange="this.form.submit()"
-						class="desktopOnly"
 						name="category"
 						id="categorySelect">
 						<option selected={params.get("category") === "All"} value="All"
@@ -253,33 +264,6 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			>
 		</section>
 	</main>
-	<!-- <dialog>
-		<select class="desktopOnly" name="sortingSelect" id="sortingSelect">
-			<option value="Latest">Latest</option>
-			<option value="Oldest">Oldest</option>
-			<option value="A_to_Z">A to Z</option>
-			<option value="Z_to_A">Z to A</option>
-			<option value="Highest">Highest</option>
-			<option value="Lowest">Lowest</option>
-		</select>
-	</dialog>
-	<dialog>
-		<select class="desktopOnly" name="categorySelect" id="categorySelect">
-			<option value="All">All</option>
-			<option value="Transactions">Transactions</option>
-			<option value="Entertainment">Entertainment</option>
-			<option value="Bills">Bills</option>
-			<option value="Groceries">Groceries</option>
-			<option value="DiningOut">Dining Out</option>
-			<option value="Transportation">Transportation</option>
-			<option value="Personal">Personal</option>
-			<option value="Care">Care</option>
-			<option value="Education">Education</option>
-			<option value="Lifestyle">Lifestyle</option>
-			<option value="Shopping">Shopping</option>
-			<option value="General">General</option>
-		</select>
-	</dialog> -->
 </Layout>
 
 <style lang="scss">
@@ -318,11 +302,12 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 	.inputWrapper {
 		display: flex;
 		border: 1px solid var(--neutral-grey);
-		padding: 0.5rem;
+		padding: 0.25rem;
 		border-radius: 0.75rem;
 		margin-right: 1rem;
 		font-size: var(--fs-body-sm);
 		transition: 150ms linear;
+		margin-left: 0.25rem;
 		&:has(input:focus),
 		&:has(input:hover),
 		&:has(input:active) {
@@ -333,6 +318,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		}
 		input {
 			border: none;
+			padding: 0.5rem;
 			&:focus,
 			&:active {
 				border: 0;
@@ -341,10 +327,14 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		}
 		button {
 			border: none;
+			display: grid;
+			place-items: center;
 			background-color: transparent;
 			padding: 0;
-			width: 1rem;
+			width: 2rem;
+			height: 2rem;
 			aspect-ratio: 1;
+			padding: 0;
 			img {
 				aspect-ratio: 1;
 				height: 1rem;
@@ -352,12 +342,38 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			cursor: pointer;
 		}
 	}
+
+	#categorySelect,
+	#sortingSelect {
+		display: none;
+		position: fixed;
+		padding: 1rem;
+		border-radius: 0.75rem;
+		border: 1px solid var(--neutral-grey);
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		box-shadow: 0px 0px 1000px 50px var(--primary-100);
+	}
+
+	#sortingSelect {
+		top: 20%;
+	}
+	#sortingSelect.displaySelect,
+	#categorySelect.displaySelect {
+		display: flex;
+	}
+
 	.filteringBtn,
 	.sortingBtn {
 		border: 0;
 		background-color: transparent;
 		min-width: 10vw;
 	}
+	.sortingWrapper {
+		margin-left: auto;
+	}
+
 	.filteringWrapper,
 	.sortingWrapper {
 		display: grid;
@@ -412,6 +428,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 		flex-direction: column;
 		gap: 1rem;
 	}
+
 	@media only screen and (min-width: 768px) {
 		.desktopOnly {
 			display: block;
@@ -478,12 +495,41 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			}
 		}
 
+		#categorySelect,
+		#sortingSelect {
+			display: flex;
+			position: relative;
+			padding: 0.5rem;
+			border-radius: 0.75rem;
+			border: 1px solid var(--neutral-grey);
+			top: initial;
+			left: initial;
+			transform: none;
+			box-shadow: none;
+		}
+
+		#sortingSelect {
+			top: initial;
+		}
+		#sortingSelect.displaySelect,
+		#categorySelect.displaySelect {
+			display: flex;
+		}
+
 		select {
 			padding: 0.5rem;
 			border-radius: 0.5rem;
 			border: 1px solid var(--neutral-grey);
 			font-size: var(--fs-body-sm);
 			color: var(--primary-100);
+			cursor: pointer;
+			transition: 150ms ease-in;
+			&:focus,
+			&:active,
+			&:hover {
+				border: 1px solid var(--primary-100);
+				transition: 150ms ease-in;
+			}
 		}
 		label {
 			color: var(--primary-100);
@@ -495,6 +541,12 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			margin-block: 1rem;
 			border: 0;
 			width: fit-content;
+			cursor: pointer;
+			&:focus,
+			&:active,
+			&:hover {
+				border: 1px solid var(--primary-100);
+			}
 		}
 
 		.filteringWrapper,
@@ -535,4 +587,32 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			margin-right: 2rem;
 		}
 	}
+	@media only screen and (min-width: 2560px) {
+		main {
+			padding-inline: 5rem;
+		}
+		h1 {
+			margin-top: 5rem;
+		}
+	}
 </style>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const sortingBtn = document.querySelector<HTMLButtonElement>(".sortingBtn");
+		const filteringBtn =
+			document.querySelector<HTMLButtonElement>(".filteringBtn");
+		const categorySelect =
+			document.querySelector<HTMLSelectElement>("#categorySelect");
+		const sortingSelect =
+			document.querySelector<HTMLSelectElement>("#sortingSelect");
+
+		sortingBtn?.addEventListener("click", () => {
+			sortingSelect?.classList.add("displaySelect");
+		});
+
+		filteringBtn?.addEventListener("click", () => {
+			categorySelect?.classList.add("displaySelect");
+		});
+	});
+</script>

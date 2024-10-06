@@ -4,14 +4,17 @@ const currentPath = Astro.url.pathname;
 
 <div class="filler"></div>
 <aside class="minimized">
-	<a class="logo" href="/"
+	<a class="logo" href="/" aria-label="Go to home"
 		><img
 			class="logoImage"
 			src="/images/logo-small.svg"
 			alt="finance logo"
 		/></a
 	>
-	<a class:list={["navLink", currentPath === "/" ? "active" : null]} href="/">
+	<a
+		aria-label="Go to home"
+		class:list={["navLink", currentPath === "/" ? "active" : null]}
+		href="/">
 		<svg
 			fill="none"
 			height="19"
@@ -42,7 +45,8 @@ const currentPath = Astro.url.pathname;
 	</a>
 	<a
 		class:list={["navLink", currentPath === "/budgets" ? "active" : null]}
-		href="/budgets">
+		href="/budgets"
+		aria-label="Go to budgets">
 		<svg
 			fill="none"
 			height="20"
@@ -57,7 +61,8 @@ const currentPath = Astro.url.pathname;
 	</a>
 	<a
 		class:list={["navLink", currentPath === "/pots" ? "active" : null]}
-		href="/pots">
+		href="/pots"
+		aria-label="Go to pots">
 		<svg
 			fill="none"
 			height="22"
@@ -72,7 +77,8 @@ const currentPath = Astro.url.pathname;
 	</a>
 	<a
 		class:list={["navLink", currentPath === "/recurring" ? "active" : null]}
-		href="/recurring">
+		href="/recurring"
+		aria-label="Go to recurring bills">
 		<svg
 			fill="none"
 			height="17"
