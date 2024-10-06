@@ -6,6 +6,7 @@ import data from "../data.json";
 import SpendingSummary from "@components/SpendingSummary.astro";
 import BudgetComponent from "@components/BudgetComponent.astro";
 
+const createdByUser: BudgetType[] = [];
 const refinedData: BudgetType[] = [];
 data.budgets.forEach((budget) => {
 	let item: BudgetType = {
@@ -46,7 +47,7 @@ data.transactions.forEach((transaction) => {
 	<main>
 		<section class="headerSection">
 			<h1>Budgets</h1>
-			<button>+ Add New Budget</button>
+			<button class="addNewBudgetBtn">+ Add New Budget</button>
 		</section>
 
 		<section class="donutSection">
@@ -70,6 +71,16 @@ data.transactions.forEach((transaction) => {
 							/>
 						))
 					}
+					{
+						createdByUser.map((item) => (
+							<SpendingSummary
+								label={item.label}
+								spent={item.spent}
+								maximum={item.maximum}
+								theme={item.theme}
+							/>
+						))
+					}
 				</div>
 			</div>
 		</section>
@@ -84,151 +95,386 @@ data.transactions.forEach((transaction) => {
 					/>
 				))
 			}
+			{
+				createdByUser.map((item) => (
+					<BudgetComponent
+						label={item.label}
+						maximum={item.maximum}
+						spent={item.spent}
+						theme={item.theme}
+					/>
+				))
+			}
 		</section>
-
-		<!-- Add New Budget Choose a category to set a spending budget. These categories
-		can help you monitor spending. Edit Budget As your budgets change, feel free
-		to update your spending limits. Budget Category Entertainment Bills
-		Groceries Dining Out Transportation Personal Care Education Lifestyle
-		Shopping General Maximum Spend Theme Green Yellow Cyan Navy Red Purple
-		Turquoise Brown Magenta Blue Navy Grey Army Green Pink Gold Orange Add
-		Budget / Save Changes -->
 
 		<!-- Delete ' budget name ' Are you sure you want to delete this budget?
 		This action cannot be reversed, and all the data inside it will be removed
 		forever. Yes, Confirm Deletion No, Go Back -->
 	</main>
 
-	<style>
-		main {
-			display: flex;
-			flex-direction: column;
-			margin-inline: auto;
-			padding: 1rem;
-			width: 100%;
-			margin-block-end: 5rem;
-		}
-		h1 {
-			font-size: var(--fs-heading-1);
-			color: var(--primary-100);
-			/* margin-block: 5rem 3rem; */
-		}
+	<dialog class="addNewBudgetDialog">
+		<div class="dialogWrapper">
+			<div class="dialogHeader">
+				<h2>Add new Budget</h2>
+				<button class="closeAddNewBudgetDialog"
+					><img src="/images/icon-close.svg" alt="Close window" /></button
+				>
+			</div>
+			<p>
+				Choose a category to set a spending budget. These categories can help
+				you monitor spending.
+			</p>
+			<form class="dialogForm">
+				<div>
+					<label for="budgetCategory">Budget Category</label>
+					<select name="budgetCategory" id="budgetCategory">
+						<option id="Entertainment" value="Entertainment"
+							>Entertainment</option
+						>
+						<option id="Bills" value="Bills">Bills</option>
+						<option id="Groceries" value="Groceries">Groceries</option>
+						<option id="Dining Out" value="Dining Out">Dining Out</option>
+						<option id="Transportation" value="Transportation"
+							>Transportation</option
+						>
+						<option id="Personal Care" value="Personal Care"
+							>Personal Care</option
+						>
+						<option id="Education" value="Education">Education</option>
+						<option id="Lifestyle" value="Lifestyle">Lifestyle</option>
+						<option id="Shopping" value="Shopping">Shopping</option>
+						<option id="General" value="General">General</option>
+					</select>
+				</div>
+				<div>
+					<label for="maximumSpend">Maximum Spend</label>
+					<input
+						placeholder="$ e.g 2000"
+						type="number"
+						name="maximumSpend"
+						id="maximumSpend"
+					/>
+				</div>
+				<div>
+					<label for="theme">Theme</label>
+					<select name="theme" id="theme">
+						<option value="Green"> Green</option>
+						<option value="Yellow"> Yellow</option>
+						<option value="Cyan"> Cyan</option>
+						<option value="Navy"> Navy</option>
+						<option value="Red"> Red</option>
+						<option value="Purple"> Purple</option>
+						<option value="Turquoise"> Turquoise</option>
+						<option value="Brown"> Brown</option>
+						<option value="Magenta"> Magenta</option>
+						<option value="Blue"> Blue</option>
+						<option value="Navy Grey"> Navy Grey</option>
+						<!-- <option value="Army Green"> <span class="dot" style="background-color: var(--secondary);"></span>Army Green</option>
+						<option value="Pink">Pink</option>
+						<option value="Gold">Gold</option>
+						<option value="Orange">Orange</option> -->
+					</select>
+				</div>
+				<button>Add budget</button>
+			</form>
+		</div>
+	</dialog>
+</Layout>
+<style>
+	main {
+		display: flex;
+		flex-direction: column;
+		margin-inline: auto;
+		padding: 1rem;
+		width: 100%;
+		margin-block-end: 5rem;
+	}
+	h1 {
+		font-size: var(--fs-heading-1);
+		color: var(--primary-100);
+		/* margin-block: 5rem 3rem; */
+	}
 
-		section {
-			background-color: var(--primary-900);
-			/* padding-inline: 1rem; */
-			padding: 1.5rem;
-			border-radius: 0.75rem;
-			&:first-of-type {
-				background-color: var(--neutral-light-beige);
-				display: flex;
-				flex-direction: row;
-				justify-content: space-between;
-				margin-block: 2rem 3rem;
-				padding: 0;
-				button {
-					background-color: var(--primary-100);
-					color: var(--primary-900);
-					border: 0;
-					border-radius: 0.5rem;
-					padding: 1rem 1rem;
-					font-size: var(--fs-body-sm);
+	section {
+		background-color: var(--primary-900);
+		/* padding-inline: 1rem; */
+		padding: 1.5rem;
+		border-radius: 0.75rem;
+		&:first-of-type {
+			background-color: var(--neutral-light-beige);
+			display: flex;
+			flex-direction: row;
+			justify-content: space-between;
+			margin-block: 2rem 3rem;
+			padding: 0;
+			button {
+				background-color: var(--primary-100);
+				color: var(--primary-900);
+				border: 0;
+				border-radius: 0.5rem;
+				padding: 1rem 1rem;
+				font-size: var(--fs-body-sm);
+				cursor: pointer;
+				transition: 150ms linear;
+				&:hover,
+				&:focus,
+				&:active {
+					opacity: 0.6;
+					transition: 150ms linear;
 				}
 			}
 		}
-		.budgetSummary {
-			margin-inline: auto;
+	}
+	.budgetSummary {
+		margin-inline: auto;
+		width: fit-content;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 1rem;
+		h2 {
+			font-size: var(--fs-heading-1);
 			width: fit-content;
-			text-align: center;
+		}
+		p {
+			font-size: var(--fs-smallest);
+			color: var(--neutral-dark-grey);
+			opacity: 1;
+			width: fit-content;
+		}
+	}
+	.donutSection {
+		margin-bottom: 1rem;
+		.sectionTitle {
+			margin-block: 2rem 1rem;
+		}
+	}
+	.budgetSection {
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		background-color: var(--neutral-light-beige);
+		gap: 1rem;
+	}
+
+	dialog {
+		border: 0;
+		border-radius: 0.75rem;
+	}
+
+	.dialogWrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		p {
+			font-size: var(--fs-body-sm);
+			color: var(--neutral-dark-grey);
+			line-height: 150%;
+		}
+	}
+	.dialogHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		h2 {
+			font-size: var(--fs-heading-2);
+			color: var(--primary-100);
+		}
+		button {
+			display: grid;
+			place-items: center;
+			border-radius: 50%;
+			width: 1.5rem;
+			height: 1.5rem;
+			aspect-ratio: 1;
+			border: 1px solid var(--neutral-dark-grey);
+			background-color: transparent;
+		}
+	}
+	.dialogForm {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		select,
+		option {
+			max-height: 200px;
+
+			overflow-y: auto;
+		}
+		div {
 			display: flex;
 			flex-direction: column;
-			align-items: center;
-			margin-top: 1rem;
-			h2 {
-				font-size: var(--fs-heading-1);
-				width: fit-content;
-			}
-			p {
+			label {
 				font-size: var(--fs-smallest);
 				color: var(--neutral-dark-grey);
-				opacity: 1;
-				width: fit-content;
 			}
+			input,
+			select {
+				padding: 0.5rem;
+				border-radius: 0.5rem;
+				border: 1px solid var(--neutral-dark-grey);
+				font-size: var(--fs-body-sm);
+			}
+		}
+
+		button {
+			background-color: var(--primary-100);
+			color: var(--primary-900);
+			border-radius: 0.5rem;
+			border: 0;
+			cursor: pointer;
+			padding-block: 1em;
+			font-size: var(--fs-body-sm);
+			font-weight: var(--fw-bold);
+			margin-top: 1rem;
+		}
+	}
+
+	@media (min-width: 768px) {
+		main {
+			padding: 2.5rem;
 		}
 		.donutSection {
-			margin-bottom: 1rem;
-			.sectionTitle {
-				margin-block: 2rem 1rem;
-			}
-		}
-		.budgetSection {
-			padding: 0;
 			display: flex;
-			flex-direction: column;
-			background-color: var(--neutral-light-beige);
-			gap: 1rem;
-		}
-		@media (min-width: 768px) {
-			main {
-				padding: 2.5rem;
+			flex-direction: row;
+			padding: 2rem;
+			.donutWrapper,
+			.spendingSummary {
+				width: 50%;
 			}
-			.donutSection {
-				display: flex;
-				flex-direction: row;
-				padding: 2rem;
-				.donutWrapper,
-				.spendingSummary {
-					width: 50%;
-				}
 
-				/* .donutWrapper {
+			/* .donutWrapper {
 					display: flex;
 					flex-direction: column-reverse;
 				} */
-			}
 		}
-		@media screen and (min-width: 1366px) {
-			main {
-				display: grid;
-				grid-template-columns: repeat(12, 1fr);
-				gap: 1rem;
-			}
-			.headerSection {
-				grid-column: 1 / span 12;
+		dialog {
+			max-width: 300px;
+		}
+	}
+	@media screen and (min-width: 1366px) {
+		main {
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			gap: 1rem;
+		}
+		.headerSection {
+			grid-column: 1 / span 12;
+			width: 100%;
+		}
+		.donutSection {
+			grid-column: 1 / span 5;
+			height: fit-content;
+			display: flex;
+			flex-direction: column;
+			.spendingSummary {
 				width: 100%;
 			}
-			.donutSection {
-				grid-column: 1 / span 5;
-				height: fit-content;
-				display: flex;
-				flex-direction: column;
-				.spendingSummary {
-					width: 100%;
-				}
-				.donutWrapper {
-					width: 100%;
-				}
+			.donutWrapper {
+				width: 100%;
 			}
+		}
 
-			.budgetSection {
-				grid-column: 6 / span 7;
+		.budgetSection {
+			grid-column: 6 / span 7;
+		}
+		dialog {
+			max-width: 300px;
+		}
+	}
+	@media screen and (min-width: 1920px) {
+		.budgetSummary {
+			margin-top: 2rem;
+			h2 {
+				font-size: var(--fs-heading-1);
+			}
+			p {
+				font-size: var(--fs-body);
 			}
 		}
-		@media screen and (min-width: 1920px) {
-			.budgetSummary {
-				margin-top: 2rem;
-				h2 {
-					font-size: var(--fs-heading-1);
-				}
-				p {
-					font-size: var(--fs-body);
-				}
-			}
-			.spendingSummaryWrapper {
-				display: flex;
-				flex-direction: column;
-				gap: 1rem;
-			}
+		.spendingSummaryWrapper {
+			display: flex;
+			flex-direction: column;
+			gap: 1rem;
 		}
-	</style>
-</Layout>
+	}
+</style>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		const addNewBudgetBtn =
+			document.querySelector<HTMLButtonElement>(".addNewBudgetBtn");
+		const addNewBudgetDialog = document.querySelector<HTMLDialogElement>(
+			".addNewBudgetDialog"
+		);
+		const closeAddNewBudgetDialog = document.querySelector<HTMLButtonElement>(
+			".closeAddNewBudgetDialog"
+		);
+		addNewBudgetBtn?.addEventListener("click", () => {
+			addNewBudgetDialog?.showModal();
+		});
+
+		closeAddNewBudgetDialog?.addEventListener("click", () => {
+			addNewBudgetDialog?.close();
+		});
+
+		const budgetMenuBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.budgetMenuBtn`);
+		const budgetMenus =
+			document.querySelectorAll<HTMLDivElement>(`.budgetMenu`);
+
+		budgetMenuBtns.forEach((button, index) =>
+			button.addEventListener("click", () => {
+				budgetMenus[index].classList.toggle("budgetMenuVisible");
+			})
+		);
+
+		const editDialogBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.editDialogBtn`);
+		const deleteDialogBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.deleteDialogBtn`);
+		const editDialogs =
+			document.querySelectorAll<HTMLDialogElement>(`.editDialog`);
+		const deleteDialogs =
+			document.querySelectorAll<HTMLDialogElement>(`.deleteDialog`);
+
+		editDialogBtns.forEach((button, index) =>
+			button.addEventListener("click", () => {
+				editDialogs[index].showModal();
+			})
+		);
+		deleteDialogBtns.forEach((button, index) =>
+			button.addEventListener("click", () => {
+				deleteDialogs[index].showModal();
+			})
+		);
+
+		const closeEditDialogBtn =
+			document.querySelectorAll<HTMLButtonElement>(".closeEditDialog");
+		const cancelBtns =
+			document.querySelectorAll<HTMLButtonElement>(".cancelBtn");
+		const deleteDialogCloseBtns =
+			document.querySelectorAll<HTMLButtonElement>(".deleteDialogClose");
+
+		deleteDialogCloseBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				deleteDialogs[index].close();
+				budgetMenus[index].classList.toggle("budgetMenuVisible");
+			});
+		});
+
+		cancelBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				deleteDialogs[index].close();
+				budgetMenus[index].classList.toggle("budgetMenuVisible");
+			});
+		});
+		closeEditDialogBtn.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				editDialogs[index].close();
+				budgetMenus[index].classList.toggle("budgetMenuVisible");
+			});
+		});
+	});
+</script>
