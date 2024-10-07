@@ -228,7 +228,10 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 			</div>
 		</section>
 		<section class="navBtns">
-			<a href={prevPageUrl} class="prevBtn navBtn"
+			<a
+				href={prevPageUrl}
+				class="prevBtn navBtn"
+				aria-label={"Go to page previous page"}
 				><img src="/images/icon-caret-left.svg" alt="" /><p>Prev</p></a
 			>
 			<div class="pageBtns">
@@ -240,6 +243,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 										"navBtn pageBtn",
 										button === currentPage ? "active" : null,
 									]}
+									aria-label={"Go to page " + button}
 									href={getPageUrl(button)}>
 									{button}
 								</a>
@@ -252,6 +256,7 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 											"navBtn pageBtn",
 											button === currentPage ? "active" : null,
 										]}
+										aria-label={"Go to page " + button}
 										href={getPageUrl(button)}>
 										{button}
 									</a>
@@ -259,7 +264,10 @@ const nextPageUrl = nextPage ? getPageUrl(nextPage) : null;
 				}
 			</div>
 
-			<a href={nextPageUrl} class="nextBtn navBtn"
+			<a
+				href={nextPageUrl}
+				class="nextBtn navBtn"
+				aria-label={"Go to page next page"}
 				><p>Next</p> <img src="/images/icon-caret-right.svg" alt="" /></a
 			>
 		</section>

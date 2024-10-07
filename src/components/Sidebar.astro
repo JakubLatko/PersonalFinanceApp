@@ -97,7 +97,7 @@ const currentPath = Astro.url.pathname;
 			src="/images/icon-minimize-menu.svg"
 			alt="Minimize and maximize menu"
 		/>
-		<p>Minimize menu</p>
+		<span>Minimize menu</span>
 	</button>
 </aside>
 
@@ -233,7 +233,7 @@ const currentPath = Astro.url.pathname;
 			&:active,
 			&:focus {
 				cursor: pointer;
-				p {
+				span {
 					color: var(--primary-900);
 
 					transition: 150ms linear;
@@ -268,7 +268,7 @@ const currentPath = Astro.url.pathname;
 				}
 			}
 			.minimizeBtn {
-				p {
+				span {
 					display: none;
 				}
 			}
