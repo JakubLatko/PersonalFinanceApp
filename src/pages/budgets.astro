@@ -6,7 +6,6 @@ import data from "../data.json";
 import SpendingSummary from "@components/SpendingSummary.astro";
 import BudgetComponent from "@components/BudgetComponent.astro";
 
-const createdByUser: BudgetType[] = [];
 const refinedData: BudgetType[] = [];
 data.budgets.forEach((budget) => {
 	let item: BudgetType = {
@@ -71,32 +70,12 @@ data.transactions.forEach((transaction) => {
 							/>
 						))
 					}
-					{
-						createdByUser.map((item) => (
-							<SpendingSummary
-								label={item.label}
-								spent={item.spent}
-								maximum={item.maximum}
-								theme={item.theme}
-							/>
-						))
-					}
 				</div>
 			</div>
 		</section>
 		<section class="budgetSection">
 			{
 				refinedData.map((item) => (
-					<BudgetComponent
-						label={item.label}
-						maximum={item.maximum}
-						spent={item.spent}
-						theme={item.theme}
-					/>
-				))
-			}
-			{
-				createdByUser.map((item) => (
 					<BudgetComponent
 						label={item.label}
 						maximum={item.maximum}

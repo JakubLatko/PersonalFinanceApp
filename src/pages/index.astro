@@ -2,28 +2,370 @@
 import Layout from "../layouts/Layout.astro";
 
 import data from "../data.json";
+import Transaction from "@components/Transaction.astro";
+import DonutChart from "@components/DonutChart.astro";
+
+let potsTotalSaved: number = 0;
+
+data.pots.forEach((pot) => {
+	potsTotalSaved += pot.total;
+});
+import { finalBills } from "@lib/recurringBillsFinal.ts";
+import type BudgetType from "@lib/budget";
+
+let paidBillsCost: number = 0;
+
+let dueBillsCost: number = 0;
+
+let totalUpcoming: number = 0;
+
+finalBills.forEach((bill) => {
+	if (bill.billPaid) {
+		paidBillsCost += bill.amount;
+	}
+
+	if (bill.billDue) {
+		dueBillsCost += bill.amount;
+	}
+	if ((!bill.billDue && !bill.billPaid) || bill.billDue) {
+		totalUpcoming += bill.amount;
+	}
+});
+
+const refinedData: BudgetType[] = [];
+data.budgets.forEach((budget) => {
+	let item: BudgetType = {
+		label: budget.category,
+		spent: 0,
+		maximum: budget.maximum,
+		theme: budget.theme,
+	};
+	data.transactions.forEach((transaction) => {
+		if (transaction.category === budget.category) {
+			item.spent += transaction.amount;
+		}
+	});
+
+	refinedData.push(item);
+});
+refinedData.forEach((item) => {
+	item.spent = item.spent * -1;
+});
+
+
+let budgetCategories: string[] = [];
+let spent: number = 0;
+let maximum: number = 0;
+
+data.budgets.forEach((budget) => {
+	maximum += budget.maximum;
+	budgetCategories.push(budget.category);
+});
+
+data.transactions.forEach((transaction) => {
+	if (budgetCategories.includes(transaction.category)) {
+		spent += transaction.amount;
+	}
+});
+
+
+
 ---
 
 <Layout title="Welcome to Astro.">
-	Overview Transactions Budgets Pots Recurring Bills Minimize Menu Overview
-	Current Balance
-	<!-- Add balance -->
+	<main>
+		<h1>Overview</h1>
+		<section class="accountBalance">
+			<div>
+				<p>Current Balance</p>
+				<h2>$ {data.balance.current.toFixed(2)}</h2>
+			</div>
+			<div>
+				<p>Income</p>
+				<h2>$ {data.balance.income.toFixed(2)}</h2>
+			</div>
+			<div>
+				<p>Expenses</p>
+				<h2>$ {data.balance.expenses.toFixed(2)}</h2>
+			</div>
+		</section>
+		<section class="potsSection">
+			<div class="sectionTitle">
+				<h2>Pots</h2>
+				<a href="/pots"
+					>See Details <img src="/images/icon-caret-right.svg" alt="" /></a
+				>
+			</div>
+			<div>
+				<di class="potTotalSaved">
+					<img src="/images/icon-pot.svg" alt="" />
+					<div>
+						<p>Total Saved</p>
+						<h2>${potsTotalSaved}</h2>
+					</div>
+				</di>
 
-	Income
-	<!-- Add income -->
+				<div class="pots">
+					{
+						data.pots.slice(0, 4).map((pot) => (
+							<div class="pot">
+								<span style=`background-color: ${pot.theme}` class="accentBar" />
+								<div>
+									<p>{pot.name}</p>
+									<h2>${pot.total}</h2>
+								</div>
+							</div>
+						))
+					}
+				</div>
+			</div>
+		</section>
+		<section class="transactionsSection">
+			<div class="sectionTitle">
+				<h2>Transactions</h2>
+				<a href="/transactions"
+					>See Details <img src="/images/icon-caret-right.svg" alt="" /></a
+				>
+			</div>
+			<div class="transactionsWrapper">
+				{
+					data.transactions
+						.slice(0, 5)
+						.map((transaction) => <Transaction categoryHidden  transaction={transaction} />)
+				}
+			</div>
+			
+		</section>
+		<section class="budgetsSection">
+			<div class="sectionTitle">
+				<h2>Budgets</h2>
+				<a href="/budgets"
+					>See Details <img src="/images/icon-caret-right.svg" alt="" /></a
+				>
+			</div>
+			<div>
+				<DonutChart />
+				<div class="budgetSummary">
+					<h2>${(spent * -1).toFixed(2)}</h2>
+					<p>of ${maximum.toFixed(2)} limit</p>
+				</div>
+				<div class="budgets">
+					{
+						refinedData.slice(0, 4).map((budget) => (
+								<div class="pot">
+									<span style=`background-color: ${budget.theme}` class="accentBar" />
+									<div>
+										<p>{budget.label}</p>
+										<h2>${budget.spent}</h2>
+									</div>
+								</div>
+							))
+					}
+				</div>
+				
+			</div>
+			
 
-	Expenses
-	<!-- Add expenses -->
-
-	Pots See Details Total Saved
-	<!-- Add pots data -->
-
-	Budgets See Details
-	<!-- Add budgets data -->
-
-	Transactions View All
-	<!-- Add transactions data -->
-
-	Recurring Bills See Details
-	<!-- Add recurring bills data -->
+		</section>
+		<section>
+			<div class="sectionTitle">
+				<h2>Recurring Bills</h2>
+				<a href="/recurring"
+					>See Details <img src="/images/icon-caret-right.svg" alt="" /></a
+				>
+			</div>
+			<div class="recurringBillsInfo">
+				<div>
+					<p>Paid Bills</p>
+					<h2>${(paidBillsCost * -1).toFixed(2)}</h2>
+				</div>
+				<div>
+					<p>Total upcoming</p>
+					<h2>${(totalUpcoming * -1).toFixed(2) }</h2>
+				</div>
+				<div>
+					<p>Due soon</p>
+					<h2>${(dueBillsCost * -1).toFixed(2)}</h2>
+				</div>
+			</div>
+		</section>
+	</main>
 </Layout>
+
+<style lang="scss">
+	main {
+		display: flex;
+		flex-direction: column;
+		margin-inline: auto;
+		padding: 1rem;
+		width: 100%;
+		margin-block-end: 5rem;
+		gap: 1rem;
+	}
+	h1 {
+		font-size: var(--fs-heading-1);
+		color: var(--primary-100);
+		margin-block: 2rem;
+	}
+
+	section {
+		background-color: var(--primary-900);
+
+		padding: 1.25rem;
+		border-radius: 0.75rem;
+
+		&:first-of-type {
+			padding: 0;
+			background-color: var(--neutral-light-beige);
+		}
+	}
+	.accountBalance {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		div {
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			padding: 1.5rem 1.25rem;
+			border-radius: 0.75rem;
+			background-color: var(--primary-900);
+			p {
+				font-size: var(--fs-body-sm);
+				color: var(--neutral-dark-grey);
+			}
+			h2 {
+				font-size: var(--fs-heading-1);
+			}
+			&:first-of-type {
+				background-color: var(--primary-100);
+				color: var(--primary-900);
+				P {
+					color: var(--primary-900);
+					opacity: 0.8;
+				}
+			}
+		}
+	}
+
+	.sectionTitle {
+		display: flex;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+		h2 {
+			font-size: var(--fs-heading-2);
+		}
+		a {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			color: var(--neutral-dark-grey);
+			text-decoration: none;
+			font-size: var(--fs-body-sm);
+			img {
+				width: 0.375rem;
+				object-fit: contain;
+			}
+		}
+	}
+	.potTotalSaved {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.25rem;
+		background-color: var(--neutral-light-beige);
+		border-radius: 0.75rem;
+		p {
+			font-size: var(--fs-body-sm);
+			color: var(--neutral-dark-grey);
+		}
+		h2 {
+			font-size: var(--fs-heading-1);
+		}
+	}
+	.pots, .budgets {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		margin-top: 1rem;
+	}
+	.pot, budget {
+		width: calc(50% - 0.5rem);
+		display: flex;
+		gap: .5rem;
+		align-items: center;
+		p{
+			font-size: var(--fs-smallest);
+			color: var(--neutral-dark-grey);
+		}
+		h2{
+			font-size: var(--fs-body-sm);
+		}
+		div{
+			display: flex;
+			flex-direction: column;
+			gap: 0.25rem;
+		}
+	}
+	.accentBar{
+		display: block;
+		width: 0.25rem;
+		height: 100%;
+		min-height: 3rem;
+		border-radius: 100vw;
+	}
+	.transactionsWrapper{
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+	.budgetSummary {
+		margin-inline: auto;
+		width: fit-content;
+		text-align: center;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		margin-top: 1rem;
+		h2 {
+			font-size: var(--fs-heading-1);
+			width: fit-content;
+		}
+		p {
+			font-size: var(--fs-smallest);
+			color: var(--neutral-dark-grey);
+			opacity: 1;
+			width: fit-content;
+		}
+	}
+	.recurringBillsInfo{
+		display:flex;
+		flex-direction: column;
+		gap: .75rem;
+		div{
+			display: flex;
+			flex-direction: row;
+			padding:1.5rem 1rem;
+			justify-content: space-between;
+			align-items: center;
+			background-color: var(--neutral-light-beige);
+			border-left: 5px solid var(--secondary-green);
+			border-radius: 0.5rem;
+			p{
+				font-size: var(--fs-body-sm);
+				color: var(--neutral-dark-grey);
+			}
+			h2{
+				font-weight: var(--fw-bold);
+				font-size: var(--fs-body-sm);
+			}
+
+			&:first-of-type{
+				border-left: 5px solid var(--secondary-yellow);
+			}
+			&:last-of-type{
+				border-left: 5px solid var(--accent-blue);
+			}
+		}
+	}
+</style>

@@ -30,7 +30,7 @@ filteredTransactions.sort((a, b) => {
 });
 
 const date = new Date("2024-08-28T22:00:00.000Z");
-const finalBills: RecurringBill[] = [];
+export const finalBills: RecurringBill[] = [];
 
 filteredTransactions.forEach((transaction) => {
 	const transactionDate = new Date(transaction.date);
