@@ -96,7 +96,7 @@ data.transactions.forEach((transaction) => {
 					>See Details <img src="/images/icon-caret-right.svg" alt="" /></a
 				>
 			</div>
-			<div>
+			<div class="potsWrapper">
 				<di class="potTotalSaved">
 					<img src="/images/icon-pot.svg" alt="" />
 					<div>
@@ -143,16 +143,19 @@ data.transactions.forEach((transaction) => {
 					>See Details <img src="/images/icon-caret-right.svg" alt="" /></a
 				>
 			</div>
-			<div>
-				<DonutChart />
-				<div class="budgetSummary">
-					<h2>${(spent * -1).toFixed(2)}</h2>
-					<p>of ${maximum.toFixed(2)} limit</p>
+			<div class="budgetsContent">
+				<div class="donutWrapper">
+					<DonutChart />
+					<div class="budgetSummary">
+						<h2>${(spent * -1).toFixed(2)}</h2>
+						<p>of ${maximum.toFixed(2)} limit</p>
+					</div>
 				</div>
+				
 				<div class="budgets">
 					{
 						refinedData.slice(0, 4).map((budget) => (
-								<div class="pot">
+								<div class="budget">
 									<span style=`background-color: ${budget.theme}` class="accentBar" />
 									<div>
 										<p>{budget.label}</p>
@@ -289,7 +292,7 @@ data.transactions.forEach((transaction) => {
 		flex-wrap: wrap;
 		margin-top: 1rem;
 	}
-	.pot, budget {
+	.pot, .budget {
 		width: calc(50% - 0.5rem);
 		display: flex;
 		gap: .5rem;
@@ -313,6 +316,7 @@ data.transactions.forEach((transaction) => {
 		height: 100%;
 		min-height: 3rem;
 		border-radius: 100vw;
+		min-width: 0.25rem;
 	}
 	.transactionsWrapper{
 		display: flex;
@@ -368,4 +372,50 @@ data.transactions.forEach((transaction) => {
 			}
 		}
 	}
+	@media only screen and (min-width: 768px) {
+		.accountBalance{
+			width: 100%;
+			justify-content: space-between;
+			flex-direction: row;
+			gap: 1rem;
+			div{
+				flex-grow: 1;
+			}
+		}
+		.potsSection{
+			padding-block: 2rem;	
+		}
+		.potsWrapper{
+			display: flex;
+			gap: 2rem;
+		}
+		.sectionTitle{
+			margin-bottom: 2rem;
+		}
+		.potTotalSaved{
+			width: calc(40% - 1rem);
+		}
+		.pots{
+			width: calc(60% - 1rem);
+		}
+		.budgetsContent{
+			display: flex;
+		}
+		.budgets{
+			display: flex;
+			flex-direction: column;
+			width: 20%;
+			margin-left: auto;
+			gap: 1.5rem;
+		}
+		.donutWrapper{
+			flex-grow: 1;
+			max-width: 400px;
+			margin-inline: auto;
+		}
+		.budget{
+			width: 100%;
+		}
+	}
+
 </style>
