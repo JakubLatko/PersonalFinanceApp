@@ -165,12 +165,9 @@ data.transactions.forEach((transaction) => {
 							))
 					}
 				</div>
-				
 			</div>
-			
-
 		</section>
-		<section>
+		<section class="recurringBillsSection">
 			<div class="sectionTitle">
 				<h2>Recurring Bills</h2>
 				<a href="/recurring"
@@ -265,9 +262,17 @@ data.transactions.forEach((transaction) => {
 			color: var(--neutral-dark-grey);
 			text-decoration: none;
 			font-size: var(--fs-body-sm);
+			transition: 150ms linear;
 			img {
 				width: 0.375rem;
 				object-fit: contain;
+			}
+			&:hover,
+			&:active,
+			&:focus {
+				cursor: pointer;
+				color: var(--primary-100);
+				transition: 150ms linear;
 			}
 		}
 	}
@@ -415,6 +420,43 @@ data.transactions.forEach((transaction) => {
 		}
 		.budget{
 			width: 100%;
+		}
+	}
+	@media only screen and (min-width: 1366px) {
+		main{
+			display: grid;
+			grid-template-columns: repeat(12, 1fr);
+			grid-template-rows: repeat(8, auto);
+			margin-bottom: 0;
+		}
+		h1{
+			grid-column: 1 / span 12;
+			grid-row: 1;
+			margin-block: 1rem;
+		}
+		section{
+			height: fit-content;
+		}
+		.accountBalance{
+			grid-column: 1 / span 12;
+			grid-row: 2 / span 2;
+		}
+		.potsSection{
+			grid-column: 1 / span 7;
+			grid-row: 4 / span 2;
+		}
+		.budgetsSection{
+			grid-column: 8 / span 5;
+			grid-row: 4 / span 3;
+		}
+		.transactionsSection{
+			grid-column: 1 / span 7;
+			grid-row: 6 / span 5;
+			
+		}
+		.recurringBillsSection{
+			grid-column: 8 / span 5;
+			grid-row: 7 / span 2;
 		}
 	}
 
