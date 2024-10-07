@@ -90,13 +90,11 @@ import PotComponent from "@components/PotComponent.astro";
 	h1 {
 		font-size: var(--fs-heading-1);
 		color: var(--primary-100);
-		/* margin-block: 5rem 3rem; */
 	}
 
 	section {
 		background-color: var(--primary-900);
-		/* padding-inline: 1rem; */
-		// padding: 1.5rem;
+
 		border-radius: 0.75rem;
 		&:first-of-type {
 			background-color: var(--neutral-light-beige);
@@ -112,6 +110,14 @@ import PotComponent from "@components/PotComponent.astro";
 				border-radius: 0.5rem;
 				padding: 1rem 1rem;
 				font-size: var(--fs-body-sm);
+				transition: 150ms linear;
+				&:hover,
+				&:active,
+				&:focus {
+					cursor: pointer;
+					opacity: 0.7;
+					transition: 150ms linear;
+				}
 			}
 		}
 	}
@@ -194,7 +200,11 @@ import PotComponent from "@components/PotComponent.astro";
 			margin-top: 1rem;
 		}
 	}
-
+	@media only screen and (min-width: 768px) {
+		dialog {
+			max-width: 300px;
+		}
+	}
 	@media only screen and (min-width: 1366px) {
 		main {
 			padding: 2.5rem;
@@ -207,6 +217,7 @@ import PotComponent from "@components/PotComponent.astro";
 </style>
 
 <script>
+	import data from "../data.json";
 	document.addEventListener("astro:page-load", () => {
 		const addNewPotBtn =
 			document.querySelector<HTMLButtonElement>(".addNewPotBtn");
@@ -226,7 +237,6 @@ import PotComponent from "@components/PotComponent.astro";
 		const potMenuBtns =
 			document.querySelectorAll<HTMLButtonElement>(`.potMenuBtn`);
 		const potMenus = document.querySelectorAll<HTMLDivElement>(`.potMenu`);
-		console.log(potMenus);
 
 		potMenuBtns.forEach((button, index) =>
 			button.addEventListener("click", () => {
@@ -278,6 +288,154 @@ import PotComponent from "@components/PotComponent.astro";
 			button.addEventListener("click", () => {
 				editDialogs[index].close();
 				potMenus[index].classList.toggle("potMenuVisible");
+			});
+		});
+
+		const addMoneyBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.addMoneyBtn`);
+		const addMoneyDialogs =
+			document.querySelectorAll<HTMLDialogElement>(`.addMoneyDialog`);
+
+		addMoneyBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				addMoneyDialogs[index].showModal();
+			});
+		});
+		const withdrawBtns =
+			document.querySelectorAll<HTMLButtonElement>(`.withdrawBtn`);
+		const withdrawDialogs =
+			document.querySelectorAll<HTMLDialogElement>(`.withdrawDialog`);
+
+		withdrawBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				withdrawDialogs[index].showModal();
+			});
+		});
+
+		const closeAddMoneyDialogBtns =
+			document.querySelectorAll<HTMLButtonElement>(".addMoneyDialogClose");
+		closeAddMoneyDialogBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				addMoneyDialogs[index].close();
+			});
+		});
+
+		const closeWithdrawDialogBtns =
+			document.querySelectorAll<HTMLButtonElement>(".withdrawDialogClose");
+		closeWithdrawDialogBtns.forEach((button, index) => {
+			button.addEventListener("click", () => {
+				withdrawDialogs[index].close();
+			});
+		});
+
+		const addMoneyForms =
+			document.querySelectorAll<HTMLFormElement>(`.addMoneyForm`);
+
+		const addMoneyInputs =
+			document.querySelectorAll<HTMLInputElement>(`.amountToAddInput`);
+		const newAmounts =
+			document.querySelectorAll<HTMLInputElement>(`.newAmount`);
+
+		const progressAddMoneys =
+			document.querySelectorAll<HTMLDivElement>(`.progressAddMoney`);
+
+		const targets = document.querySelectorAll<HTMLDivElement>(".targetVar");
+
+		const addMoneyPercentages =
+			document.querySelectorAll<HTMLDivElement>(`.addMoneyPercentage`);
+
+		addMoneyInputs.forEach((input, index) => {
+			let initialValue = Number(newAmounts[index].innerHTML.slice(1));
+
+			input.addEventListener("change", (e) => {
+				newAmounts[index].innerHTML = "$" + String(initialValue);
+				let oldAmount = Number(newAmounts[index].innerHTML.slice(1));
+				if (Number(input.value) > Number(data.balance.current)) {
+					input.value = "";
+					newAmounts[index].innerHTML = "$" + String(oldAmount);
+					return;
+				}
+
+				newAmounts[index].innerHTML = "";
+
+				newAmounts[index].innerHTML =
+					"$" + String(oldAmount + Number(input.value));
+
+				addMoneyPercentages[index].innerHTML = String(
+					(
+						((oldAmount + Number(input.value)) /
+							Number(targets[index].innerHTML)) *
+						100
+					).toFixed(2) + "%"
+				);
+				progressAddMoneys[index].setAttribute(
+					"style",
+					`width:${
+						String(
+							(
+								((oldAmount + Number(input.value)) /
+									Number(targets[index].innerHTML)) *
+								100
+							).toFixed(2)
+						) + "%"
+					}; background-color: var(--secondary-green);`
+				);
+			});
+		});
+
+		const withdrawMoneyForms =
+			document.querySelectorAll<HTMLFormElement>(`.withdrawForm`);
+
+		const withdrawMoneyInputs =
+			document.querySelectorAll<HTMLInputElement>(`.withdrawMoneyInput`);
+
+		const withdrawNewAmounts =
+			document.querySelectorAll<HTMLInputElement>(`.withdrawNewAmount`);
+
+		const progressWithdrawMoneys = document.querySelectorAll<HTMLDivElement>(
+			`.progressWithdrawMoney`
+		);
+
+		const withdrawMoneyPercentages = document.querySelectorAll<HTMLDivElement>(
+			`.withdrawMoneyPercentage`
+		);
+
+		withdrawMoneyInputs.forEach((input, index) => {
+			let initialValue = Number(withdrawNewAmounts[index].innerHTML.slice(1));
+
+			input.addEventListener("change", (e) => {
+				withdrawNewAmounts[index].innerHTML = "$" + String(initialValue);
+				let oldAmount = Number(withdrawNewAmounts[index].innerHTML.slice(1));
+				if (Number(input.value) > oldAmount || Number(input.value) < 0) {
+					input.value = "";
+					withdrawNewAmounts[index].innerHTML = "$" + String(oldAmount);
+					return;
+				}
+
+				withdrawNewAmounts[index].innerHTML = "";
+
+				withdrawNewAmounts[index].innerHTML =
+					"$" + String(oldAmount - Number(input.value));
+
+				withdrawMoneyPercentages[index].innerHTML = String(
+					(
+						((oldAmount - Number(input.value)) /
+							Number(targets[index].innerHTML)) *
+						100
+					).toFixed(2) + "%"
+				);
+				progressWithdrawMoneys[index].setAttribute(
+					"style",
+					`width:${
+						String(
+							(
+								((oldAmount - Number(input.value)) /
+									Number(targets[index].innerHTML)) *
+								100
+							).toFixed(2)
+						) + "%"
+					}; background-color: var(--secondary-red);`
+				);
 			});
 		});
 	});

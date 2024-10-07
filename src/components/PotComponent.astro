@@ -25,8 +25,8 @@ data.transactions.forEach((transaction) => {
 	<div class="header">
 		<span class="accentDot" style=`background-color: ${theme}`></span>
 		<h2>{label}</h2>
-		<button class="potMenuBtn"
-			><img src="/images/icon-ellipsis.svg" alt="" /></button
+		<button class="potMenuBtn" aria-label="Open menu"
+			><img src="/images/icon-ellipsis.svg" alt="Open menu" /></button
 		>
 		<div class=`potMenu${label} potMenu`>
 			<button class="editDialogBtn">Edit pot</button>
@@ -48,8 +48,8 @@ data.transactions.forEach((transaction) => {
 		<h3 class="target">Target of ${target.toFixed(2)}</h3>
 	</div>
 	<div class="addWithdrawButtons">
-		<button>+ Add Money</button>
-		<button>Withdraw</button>
+		<button class="addMoneyBtn">+ Add Money</button>
+		<button class="withdrawBtn">Withdraw</button>
 	</div>
 </div>
 <dialog class="editDialog">
@@ -164,67 +164,98 @@ data.transactions.forEach((transaction) => {
 
 <dialog class="withdrawDialog">
 	<div class="dialogWrapper">
-		<div>
+		<div class="dialogHeader">
 			<h2>Withdraw from ‘{label}’</h2>
-			<button><img src="/images/icon-close.svg" alt="" /></button>
+			<button class="withdrawDialogClose"
+				><img src="/images/icon-close.svg" alt="Close window" /></button
+			>
 		</div>
 		<p>
 			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Phasellus
 			hendrerit. Pellentesque aliquet nibh nec urna. In nisi neque, aliquet.
 		</p>
-		<div>
+		<div class="totalSaved">
 			<p>New amount</p>
-			<h2>${saved.toFixed(2)}</h2>
+			<h2 class="withdrawNewAmount">${saved.toFixed(2)}</h2>
 		</div>
 		<div class="bar">
-			<div class="progress"></div>
+			<div
+				class="progressWithdrawMoney"
+				style=`width: ${((saved / target) * 100)}%; background-color: ${theme}`>
+			</div>
 		</div>
-		<div>
-			<h3 class="percentage">{((saved / target) * 100).toFixed(2)}%</h3>
+		<div class="percentageTarget">
+			<h3 class="percentage withdrawMoneyPercentage">
+				{((saved / target) * 100).toFixed(2)}%
+			</h3>
 			<h3 class="target">Target of ${target}</h3>
+			<h3 class="targetVar" style="display: none;">{target}</h3>
 		</div>
-		<div>
+		<form class="withdrawForm">
 			<label for=`amountToWithdraw${label}`>Amount to withdraw</label>
-			<input
-				type="number"
-				name=`amountToWithdraw${label}`
-				id=`amountToWithdraw${label}`
-			/>
-		</div>
-		<button>Confirm Withdrawal</button>
+			<div>
+				<span>$</span>
+				<input
+					type="number"
+					name=`amountToWithdraw${label}`
+					id=`amountToWithdraw${label}`
+					min="0"
+					class="withdrawMoneyInput"
+					max={saved}
+					required
+				/>
+			</div>
+
+			<button>Confirm Withdrawal</button>
+		</form>
 	</div>
 </dialog>
 
 <dialog class="addMoneyDialog">
 	<div class="dialogWrapper">
-		<div>
+		<div class="dialogHeader">
 			<h2>Add to ‘{label}’</h2>
-			<button><img src="/images/icon-close.svg" alt="" /></button>
+			<button class="addMoneyDialogClose"
+				><img src="/images/icon-close.svg" alt="Close window" /></button
+			>
 		</div>
 		<p>
 			Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Phasellus
 			hendrerit. Pellentesque aliquet nibh nec urna. In nisi neque, aliquet.
 		</p>
-		<div>
+		<div class="totalSaved">
 			<p>New amount</p>
-			<h2>${saved.toFixed(2)}</h2>
+			<h2 class="newAmount">${saved.toFixed(2)}</h2>
 		</div>
 		<div class="bar">
-			<div class="progress"></div>
+			<div
+				class="progressAddMoney"
+				style=`width: ${((saved / target) * 100)}%; background-color: ${theme}`>
+			</div>
 		</div>
-		<div>
-			<h3 class="percentage">{((saved / target) * 100).toFixed(2)}%</h3>
+		<div class="percentageTarget">
+			<h3 class="addMoneyPercentage percentage">
+				{((saved / target) * 100).toFixed(2)}%
+			</h3>
 			<h3 class="target">Target of ${target}</h3>
 		</div>
-		<div>
+		<form class="addMoneyForm">
 			<label for=`amountToAdd${label}`>Amount to Add</label>
-			<input
-				type="number"
-				name=`amountToAdd${label}`
-				id=`amountToAdd${label}`
-			/>
-		</div>
-		<button>Confirm Addition</button>
+			<div>
+				<span>$</span>
+				<input
+					type="number"
+					class="amountToAddInput"
+					name=`amountToAdd${label}`
+					id=`amountToAdd${label}`
+					min="0"
+					max={data.balance.current}
+					required
+				/>
+			</div>
+
+			<button type="submit">Confirm Addition</button>
+		</form>
 	</div>
 </dialog>
 
@@ -253,6 +284,11 @@ data.transactions.forEach((transaction) => {
 				width: 1.25rem;
 				height: auto;
 			}
+			&:hover,
+			&:active,
+			&:focus {
+				cursor: pointer;
+			}
 		}
 		h2 {
 			font-size: var(--fs-heading-2);
@@ -265,7 +301,9 @@ data.transactions.forEach((transaction) => {
 		background-color: var(--neutral-light-beige);
 		border-radius: 0.25rem;
 
-		.progress {
+		.progress,
+		.progressAddMoney,
+		.progressWithdrawMoney {
 			height: 100%;
 			border-radius: 0.25rem;
 			max-width: 100%;
@@ -315,6 +353,15 @@ data.transactions.forEach((transaction) => {
 			font-size: var(--fs-body-sm);
 			padding: 1rem;
 			border-radius: 0.5rem;
+			transition: 150ms linear;
+			&:hover,
+			&:active,
+			&:focus {
+				cursor: pointer;
+				background-color: var(--primary-900);
+				transition: 150ms linear;
+				outline: 1px solid var(--primary-100);
+			}
 		}
 	}
 	.accentDot {
@@ -482,6 +529,53 @@ data.transactions.forEach((transaction) => {
 		max-width: 300px;
 	}
 
+	.addMoneyForm,
+	.withdrawForm {
+		display: flex;
+		flex-direction: column;
+		label {
+			font-size: var(--fs-smallest);
+			color: var(--neutral-dark-grey);
+			font-weight: var(--fw-bold);
+		}
+		div {
+			display: flex;
+			align-items: center;
+			border-radius: 0.5rem;
+			border: 1px solid var(--neutral-grey);
+			padding: 0.125rem;
+			span {
+				color: var(--neutral-dark-grey);
+				font-size: var(--fs-body-sm);
+				margin-left: 0.5rem;
+			}
+			input {
+				font-size: var(--fs-body-sm);
+				border: 0;
+				outline: 0;
+				padding: 0.25rem;
+				background-color: transparent;
+				width: 100%;
+			}
+		}
+		button {
+			font-size: var(--fs-body-sm);
+			font-weight: var(--fw-bold);
+			margin-top: 1rem;
+			background-color: var(--primary-100);
+			color: var(--primary-900);
+			border-radius: 0.5rem;
+			border: 0;
+			cursor: pointer;
+			padding-block: 1em;
+			&:focus,
+			&:active,
+			&:hover {
+				cursor: pointer;
+			}
+		}
+	}
+
 	@media screen and (min-width: 768px) {
 		.container {
 			padding: 2rem;
@@ -489,6 +583,9 @@ data.transactions.forEach((transaction) => {
 		}
 		.buttons {
 			margin-block: 2rem 1rem;
+		}
+		dialog {
+			max-width: 300px;
 		}
 	}
 
